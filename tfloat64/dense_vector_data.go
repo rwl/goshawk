@@ -32,14 +32,14 @@ func (v DenseVectorData) Elements() interface{} {
 	return v.elements
 }
 
-func (v DenseVectorData) Like(size int) colt.VectorData {
+func (v DenseVectorData) Like(size int) VectorData {
 	return &DenseVectorData{
 		colt.NewCoreVectorData(false, size, 0, 1),
 		make([]float64, size),
 	}
 }
 
-func (v DenseVectorData) LikeMatrix(rows, columns int) colt.MatrixData {
+func (v DenseVectorData) LikeMatrix(rows, columns int) MatrixData {
 	return nil/*DenseMatrixData{
 		CoreMatrixData{
 			isView: false,
@@ -54,7 +54,7 @@ func (v DenseVectorData) LikeMatrix(rows, columns int) colt.MatrixData {
 	}*/
 }
 
-func (v DenseVectorData) ViewSelectionLike(offsets []int) colt.VectorData {
+func (v DenseVectorData) ViewSelectionLike(offsets []int) VectorData {
 	return nil/*SelectedDenseVectorData{
 		CoreVectorData: CoreVectorData{
 			isView: false,
@@ -68,14 +68,14 @@ func (v DenseVectorData) ViewSelectionLike(offsets []int) colt.VectorData {
 	}*/
 }
 
-func (v DenseVectorData) View() colt.VectorData {
+func (v DenseVectorData) View() VectorData {
 	return &DenseVectorData{
 		colt.NewCoreVectorData(v.IsView(), v.Size(), v.Zero(), v.Stride()),
 		v.elements,
 	}
 }
 
-func (v DenseVectorData) ReshapeMatrix(rows, columns int) (colt.MatrixData, error) {
+func (v DenseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	if rows * columns != v.Size() {
 		return nil, l4g.Error("rows*columns != size")
 	}
@@ -99,7 +99,7 @@ func (v DenseVectorData) ReshapeMatrix(rows, columns int) (colt.MatrixData, erro
 	return nil, nil
 }
 
-func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (colt.CubeData, error) {
+func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
 	if slices * rows * columns != v.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}

@@ -3,7 +3,6 @@ package tfloat64
 import (
 	"math"
 	"math/rand"
-	"bitbucket.org/rwl/colt"
 )
 
 type Float64Func func(float64) float64
@@ -16,7 +15,7 @@ type Float64Float64Procedure func(float64, float64) float64
 
 type IntIntFloat64Func func(int, int, float64) float64
 
-type VectorProcedure func(colt.VectorData) bool
+type VectorProcedure func(VectorData) bool
 
 // Function that returns a * a.
 func Square(a float64) float64 {

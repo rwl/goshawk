@@ -5,49 +5,6 @@ import (
 	l4g "code.google.com/p/log4go"
 )
 
-// Interface for all vector backends.
-type VectorData interface {
-	// Returns the matrix cell value at coordinate "index".
-	//
-	// Provided with invalid parameters this method may cause a panic or
-	// return invalid values without causing an error. You should only
-	// use this method when you are absolutely sure that the coordinate
-	// is within bounds.
-	// Precondition (unchecked): index < 0 || index >= Size().
-	GetQuick(int) float64
-
-	// Sets the matrix cell at coordinate "index" to the specified value.
-	//
-	// Provided with invalid parameters this method may cause a panic or
-	// access illegal indexes without causing an error. You should only use
-	// this method when you are absolutely sure that the coordinate is
-	// within bounds.
-	// Precondition (unchecked): index < 0 || index >= Size().
-	SetQuick(int, float64)
-
-	IsView() bool
-
-	// Returns the number of cells.
-	Size() int
-
-	Zero() int
-	Stride() int
-
-//	Like() VectorData
-	Like(int) VectorData
-	LikeMatrix(int, int) MatrixData
-	ReshapeMatrix(int, int) (MatrixData, error)
-	ReshapeCube(int, int, int) (CubeData, error)
-	ViewSelectionLike(offsets []int) VectorData
-	View() VectorData
-
-	Elements() interface{}
-
-	vFlip()
-	vPart(index, width int) error
-	vStrides(stride int) error
-}
-
 // Vector data common to all vector backends.
 type CoreVectorData struct {
 	isView bool // Whether the receiver is a view or not.
@@ -90,7 +47,7 @@ func (v CoreVectorData) checkRange(index, width int) error {
 // Self modifying version of viewFlip(). What used to be index 0 is
 // now index Size()-1, ..., what used to be index Size()-1
 // is now index 0.
-func (v CoreVectorData) vFlip() {
+func (v CoreVectorData) VectorFlip() {
 	if v.size > 0 {
 		v.zero += (v.size - 1)*v.stride
 		v.stride = -v.stride
@@ -99,7 +56,7 @@ func (v CoreVectorData) vFlip() {
 }
 
 // Self modifying version of ViewPart().
-func (v CoreVectorData) vPart(index, width int) error {
+func (v CoreVectorData) VectorPart(index, width int) error {
 	err := v.checkRange(index, width)
 	if err != nil {
 		return err
@@ -111,7 +68,7 @@ func (v CoreVectorData) vPart(index, width int) error {
 }
 
 // Self modifying version of ViewStrides().
-func (v CoreVectorData) vStrides(stride int) error {
+func (v CoreVectorData) VectorStrides(stride int) error {
 	if stride <= 0 {
 		return l4g.Error("illegal stride: %s", stride)
 	}

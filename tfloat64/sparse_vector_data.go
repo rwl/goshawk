@@ -34,32 +34,32 @@ func (sv SparseVectorData) Elements() interface{} {
 	return sv.elements
 }
 
-func (sv SparseVectorData) Like(size int) colt.VectorData {
+func (sv SparseVectorData) Like(size int) VectorData {
 	return &SparseVectorData{
 		colt.NewCoreVectorData(false, size, 0, 1),
 		make(map[int]float64),
 	}
 }
 
-func (sv SparseVectorData) LikeMatrix(rows, columns int) colt.MatrixData {
+func (sv SparseVectorData) LikeMatrix(rows, columns int) MatrixData {
 	return nil
 }
 
-func (sv SparseVectorData) ViewSelectionLike(offsets []int) colt.VectorData {
+func (sv SparseVectorData) ViewSelectionLike(offsets []int) VectorData {
 	return nil
 }
 
-func (sv SparseVectorData) View() colt.VectorData {
+func (sv SparseVectorData) View() VectorData {
 	return &SparseVectorData{
 		colt.NewCoreVectorData(sv.IsView(), sv.Size(), sv.Zero(), sv.Stride()),
 		sv.elements,
 	}
 }
 
-func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (colt.MatrixData, error) {
+func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	return nil, nil
 }
 
-func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (colt.CubeData, error) {
+func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
 	return nil, nil
 }
