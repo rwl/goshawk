@@ -271,3 +271,265 @@ func testAssignVectorFunc(t *testing.T, A vectorFuncAssigner, B *Vector) {
 		}
 	}
 }
+
+type procedureAssigner interface {
+	Size() int
+	GetQuick(int) float64
+	AssignProcedure(Float64Procedure, float64) *Vector
+	Copy() *Vector
+}
+
+func TestDenseAssignProcedure(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testAssignProcedure(t, A)
+}
+
+func TestSparseAssignProcedure(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testAssignProcedure(t, A)
+}
+
+func testAssignProcedure(t *testing.T, A procedureAssigner) {
+	procedure := func(element float64) bool {
+		if math.Abs(element) > 0.1 {
+			return true
+		} else {
+			return false
+		}
+	}
+	Acopy := A.Copy()
+	A.AssignProcedure(procedure, -1.0)
+	for i := 0; i < A.Size(); i++ {
+		var expected, result float64
+		if math.Abs(Acopy.GetQuick(i)) > 0.1 {
+			expected = -1.0
+			result = A.GetQuick(i)
+		} else {
+			expected = Acopy.GetQuick(i)
+			result = A.GetQuick(i)
+		}
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type procedureFuncAssigner interface {
+	Size() int
+	GetQuick(int) float64
+	AssignProcedureFunc(Float64Procedure, Float64Func) *Vector
+	Copy() *Vector
+}
+
+func TestDenseAssignProcedureFunc(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testAssignProcedureFunc(t, A)
+}
+
+func TestSparseAssignProcedureFunc(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testAssignProcedureFunc(t, A)
+}
+
+func testAssignProcedureFunc(t *testing.T, A procedureFuncAssigner) {
+	procedure := func(element float64) bool {
+		if math.Abs(element) > 0.1 {
+			return true
+		} else {
+			return false
+		}
+	}
+	Acopy := A.Copy()
+	A.AssignProcedureFunc(procedure, math.Tan)
+	for i := 0; i < A.Size(); i++ {
+		var expected, result float64
+		if math.Abs(Acopy.GetQuick(i)) > 0.1 {
+			expected = math.Tan(Acopy.GetQuick(i))
+			result = A.GetQuick(i)
+		} else {
+			expected = Acopy.GetQuick(i)
+			result = A.GetQuick(i)
+		}
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type hasCardinality interface {
+	Size() int
+	Cardinality() int
+}
+
+func TestDenseCardinality(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testCardinality(t, A)
+}
+
+func TestSparseCardinality(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testCardinality(t, A)
+}
+
+func testCardinality(t *testing.T, A hasCardinality) {
+	card := A.Cardinality()
+	if A.Size() != card {
+		t.Errorf("expected:%g actual:%g", A.Size(), card)
+	}
+}
+
+type equaler interface {
+	Assign(float64) *Vector
+	Equals(float64) bool
+}
+
+func TestDenseEquals(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testEquals(t, A)
+}
+
+func TestSparseEquals(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testEquals(t, A)
+}
+
+func testEquals(t *testing.T, A equaler) {
+	value := 1.0
+	A.Assign(value)
+	if !A.Equals(value) {
+		t.Errorf("expected:%g", value)
+	}
+	if A.Equals(2) {
+		t.Fail()
+	}
+}
+
+/*type vectorEqualer interface {
+	EqualsVector(*Vector) bool
+}*/
+
+func TestDenseEqualsVector(t *testing.T) {
+	A, B := makeDenseVectors()
+	testEqualsVector(t, A, B)
+}
+
+func TestSparseEqualsVector(t *testing.T) {
+	A, B := makeSparseVectors()
+	testEqualsVector(t, A, B)
+}
+
+func testEqualsVector(t *testing.T, A, B *Vector) {
+	if !A.EqualsVector(A) {
+		t.Fail()
+	}
+	if A.EqualsVector(B) {
+		t.Fail()
+	}
+}
+
+type maxLocationer interface {
+	Assign(float64) *Vector
+	SetQuick(int, float64)
+	Size() int
+	MaxLocation() (float64, int)
+}
+
+func TestDenseMaxLocation(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testMaxLocation(t, A)
+}
+
+func TestSparseMaxLocation(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testMaxLocation(t, A)
+}
+
+func testMaxLocation(t *testing.T, A maxLocationer) {
+	A.Assign(0)
+	value := 0.7
+	A.SetQuick(A.Size() / 3, value)
+	A.SetQuick(A.Size() / 2, 0.1)
+	max, loc := A.MaxLocation()
+	if math.Abs(value - max) > tol {
+		t.Errorf("expected:%g actual:%g", value, max)
+	}
+	if A.Size() / 3 != loc {
+		t.Errorf("expected:%d actual:%d", A.Size() / 3, loc)
+	}
+}
+
+type minLocationer interface {
+	Assign(float64) *Vector
+	SetQuick(int, float64)
+	Size() int
+	MinLocation() (float64, int)
+}
+
+func TestDenseMinLocation(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testMinLocation(t, A)
+}
+
+func TestSparseMinLocation(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testMinLocation(t, A)
+}
+
+func testMinLocation(t *testing.T, A minLocationer) {
+	A.Assign(0)
+	value := -0.7
+	A.SetQuick(A.Size() / 3, value)
+	A.SetQuick(A.Size() / 2, -0.1)
+	min, loc := A.MinLocation()
+	if math.Abs(value - min) > tol {
+		t.Errorf("expected:%g actual:%g", value, min)
+	}
+	if A.Size() / 3 != loc {
+		t.Errorf("expected:%d actual:%d", A.Size() / 3, loc)
+	}
+}
+
+type negativeValuer interface {
+	Assign(float64) *Vector
+	SetQuick(int, float64)
+	Size() int
+	NegativeValues(*[]int, *[]float64)
+}
+
+func TestDenseNegativeValues(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testGetNegativeValues(t, A)
+}
+
+func TestSparseNegativeValues(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testGetNegativeValues(t, A)
+}
+
+func testGetNegativeValues(t *testing.T, A negativeValuer) {
+	A.Assign(0)
+	A.SetQuick(A.Size() / 3, -0.7)
+	A.SetQuick(A.Size() / 2, -0.1)
+	//	indexList, valueList := make([]int, 0), make([]float64, 0)
+	var indexList []int
+	var valueList []float64
+	A.NegativeValues(&indexList, &valueList)
+	if len(indexList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(indexList))
+	}
+	if len(valueList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(valueList))
+	}
+	if !ContainsInt(indexList, A.Size() / 3) {
+		t.Errorf("missing:%d", A.Size() / 3)
+	}
+	if !ContainsInt(indexList, A.Size() / 2) {
+		t.Errorf("missing:%d", A.Size() / 2)
+	}
+	if !ContainsFloat(valueList, -0.7, tol) {
+		t.Errorf("missing:%g", -0.7)
+	}
+	if !ContainsFloat(valueList, -0.1, tol) {
+		t.Errorf("missing:%g", -0.1)
+	}
+}

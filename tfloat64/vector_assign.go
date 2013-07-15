@@ -71,3 +71,27 @@ func (v *Vector) AssignVectorFunc(y VectorData, f Float64Float64Func) (*Vector, 
 	}
 	return v, nil
 }
+
+// Assigns the result of a function to all cells that satisfy a condition.
+func (v *Vector) AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Vector {
+	var elem float64
+	for i := 0; i < v.Size(); i++ {
+		elem = v.GetQuick(i)
+		if cond(elem) {
+			v.SetQuick(i, f(elem))
+		}
+	}
+	return v
+}
+
+// Assigns a value to all cells that satisfy a condition.
+func (v *Vector) AssignProcedure(cond Float64Procedure, value float64) *Vector {
+	var elem float64
+	for i := 0; i < v.Size(); i++ {
+		elem = v.GetQuick(i)
+		if cond(elem) {
+			v.SetQuick(i, value)
+		}
+	}
+	return v
+}
