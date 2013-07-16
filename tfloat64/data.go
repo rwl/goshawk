@@ -47,8 +47,17 @@ type VectorData interface {
 type MatrixData interface {
 	GetQuick(int, int) float64
 	SetQuick(int, int, float64)
+	IsView() bool
 	Rows() int
 	Columns() int
+	RowStride() int
+	ColumnStride() int
+	RowZero() int
+	ColumnZero() int
+
+	Elements() interface{}
+
+	index(row, column int) int
 }
 
 type CubeData interface {

@@ -79,24 +79,21 @@ func (v DenseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	if rows * columns != v.Size() {
 		return nil, l4g.Error("rows*columns != size")
 	}
-	/*M, _ := NewMatrix(rows, columns)
+	M := NewMatrix(rows, columns)
 	elementsOther := M.Elements().([]float64)
 	zeroOther := M.index(0, 0)
-	rowStrideOther := M.RowStride()
-	columnStrideOther := M.ColumnStride()
 
 	var idxOther int
-	idx := v.zero
+	idx := v.Zero()
 	for c := 0; c < columns; c++ {
-		idxOther = zeroOther + c * columnStrideOther
+		idxOther = zeroOther + c * M.ColumnStride()
 		for r := 0; r < rows; r++ {
 			elementsOther[idxOther] = v.elements[idx]
-			idxOther += rowStrideOther
-			idx += v.stride
+			idxOther += M.RowStride()
+			idx += v.Stride()
 		}
 	}
-	return M, nil*/
-	return nil, nil
+	return M, nil
 }
 
 func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {

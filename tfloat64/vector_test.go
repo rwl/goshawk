@@ -510,7 +510,6 @@ func testGetNegativeValues(t *testing.T, A negativeValuer) {
 	A.Assign(0)
 	A.SetQuick(A.Size() / 3, -0.7)
 	A.SetQuick(A.Size() / 2, -0.1)
-	//	indexList, valueList := make([]int, 0), make([]float64, 0)
 	var indexList []int
 	var valueList []float64
 	A.NegativeValues(&indexList, &valueList)
@@ -531,5 +530,183 @@ func testGetNegativeValues(t *testing.T, A negativeValuer) {
 	}
 	if !ContainsFloat(valueList, -0.1, tol) {
 		t.Errorf("missing:%g", -0.1)
+	}
+}
+
+type nonZeroer interface {
+	Assign(float64) *Vector
+	SetQuick(int, float64)
+	Size() int
+	NonZeros(*[]int, *[]float64)
+}
+
+func TestDenseNonZeros(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testNonZeros(t, A)
+}
+
+func testNonZeros(t *testing.T, A nonZeroer) {
+	A.Assign(0)
+	A.SetQuick(A.Size() / 3, 0.7)
+	A.SetQuick(A.Size() / 2, 0.1)
+	var indexList []int
+	var valueList []float64
+	A.NonZeros(&indexList, &valueList)
+	if len(indexList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(indexList))
+	}
+	if len(valueList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(valueList))
+	}
+	if !ContainsInt(indexList, A.Size() / 3) {
+		t.Errorf("missing:%d", A.Size() / 3)
+	}
+	if !ContainsInt(indexList, A.Size() / 2) {
+		t.Errorf("missing:%d", A.Size() / 2)
+	}
+	if !ContainsFloat(valueList, 0.7, tol) {
+		t.Errorf("missing:%g", 0.7)
+	}
+	if !ContainsFloat(valueList, 0.1, tol) {
+		t.Errorf("missing:%g", 0.1)
+	}
+}
+
+type positiveValuer interface {
+	Assign(float64) *Vector
+	SetQuick(int, float64)
+	Size() int
+	PositiveValues(*[]int, *[]float64)
+}
+
+func TestDensePositiveValues(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testPositiveValues(t, A)
+}
+
+func TestSparsePositiveValues(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testPositiveValues(t, A)
+}
+
+func testPositiveValues(t *testing.T, A positiveValuer) {
+	A.Assign(0)
+	A.SetQuick(A.Size() / 3, 0.7)
+	A.SetQuick(A.Size() / 2, 0.1)
+	var indexList []int
+	var valueList []float64
+	A.PositiveValues(&indexList, &valueList)
+	if len(indexList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(indexList))
+	}
+	if len(valueList) != 2 {
+		t.Errorf("expected:%d actual:%d", 2, len(valueList))
+	}
+	if !ContainsInt(indexList, A.Size() / 3) {
+		t.Errorf("missing:%d", A.Size() / 3)
+	}
+	if !ContainsInt(indexList, A.Size() / 2) {
+		t.Errorf("missing:%d", A.Size() / 2)
+	}
+	if !ContainsFloat(valueList, 0.7, tol) {
+		t.Errorf("missing:%g", 0.7)
+	}
+	if !ContainsFloat(valueList, 0.1, tol) {
+		t.Errorf("missing:%g", 0.1)
+	}
+}
+
+type toArrayer interface {
+	ToArray() []float64
+	GetQuick(int) float64
+	Size() int
+}
+
+func TestDenseToArray(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testToArray(t, A)
+}
+
+func TestSparseToArray(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testToArray(t, A)
+}
+
+func testToArray(t *testing.T, A toArrayer) {
+	array := A.ToArray()
+	if A.Size() != len(array) {
+		t.Errorf("expected:%d actual:%d", A.Size(), len(array))
+	}
+	for i := 0; i < A.Size(); i++ {
+		expected := array[i]
+		result := A.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type fillArrayer interface {
+	FillArray([]float64) error
+	GetQuick(int) float64
+	Size() int
+}
+
+func TestDenseFillArray(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testFillArray(t, A)
+}
+
+func TestSparseFillArray(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testFillArray(t, A)
+}
+
+func testFillArray(t *testing.T, A fillArrayer) {
+	array := make([]float64, A.Size())
+	err := A.FillArray(array)
+	if err != nil {
+		t.Fail()
+	}
+	for i := 0; i < A.Size(); i++ {
+		expected := A.GetQuick(i)
+		result := array[i]
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type reshapeMatrixer interface {
+	ReshapeMatrix(int, int) (MatrixData, error)
+	GetQuick(int) float64
+}
+
+func TestDenseReshapeMatrix(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testReshapeMatrix(t, A)
+}
+
+func TestSparseReshapeMatrix(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testReshapeMatrix(t, A)
+}
+
+func testReshapeMatrix(t *testing.T, A reshapeMatrixer) {
+	rows := 10
+	columns := 17
+	B, err := A.ReshapeMatrix(rows, columns)
+	if err != nil {
+		t.Fail()
+	}
+	idx := 0
+	for c := 0; c < columns; c++ {
+		for r := 0; r < rows; r++ {
+			if math.Abs(A.GetQuick(idx) - B.GetQuick(r, c)) > tol {
+				t.Errorf("idx:%d r:%d c:%d expected:%g actual:%g",
+					idx, r, c, A.GetQuick(idx), B.GetQuick(r, c))
+			}
+			idx++
+		}
 	}
 }

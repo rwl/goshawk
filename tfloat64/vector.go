@@ -9,10 +9,6 @@ type Vector struct {
 	VectorData
 }
 
-func newVector(impl VectorData) Vector {
-	return Vector{impl}
-}
-
 func (v *Vector) checkSize(other VectorData) error {
 	if v.Size() != other.Size() {
 //		formatter := NewFormatter()
@@ -22,6 +18,11 @@ func (v *Vector) checkSize(other VectorData) error {
 			v.Size(), other.Size())
 	}
 	return nil
+}
+
+// Returns a string representation using default formatting.
+func (v *Vector) String() string {
+	return ""//NewFormatter().VectorToString(v)
 }
 
 // Returns a short string representation of the receiver's shape.
@@ -36,6 +37,16 @@ func (v *Vector) Get(index int) (float64, error) {
 			v.StringShort(), index)
 	}
 	return v.GetQuick(index), nil
+}
+
+// Sets the matrix cell at coordinate index to the specified value.
+func (v *Vector) Set(index int, value float64) error {
+	if index < 0 || index >= v.Size() {
+		return l4g.Error("Attempted to access %s at index=%d",
+			v.StringShort(), index)
+	}
+	v.SetQuick(index, value)
+	return nil
 }
 
 // Constructs and returns a deep copy of the receiver.
@@ -152,4 +163,211 @@ func (v *Vector) NegativeValues(indexList *[]int, valueList *[]float64) {
 			}
 		}
 	}
+}
+
+// Fills the coordinates and values of cells having non-zero values into the
+// specified lists. Fills into the lists, starting at index 0. After this
+// call returns the specified lists all have a new size, the number of
+// non-zero values.
+//
+// In general, fill order is unspecified. This implementation fills
+// like: for (index = 0..size()-1) do... .
+// Example:
+//
+//		0, 0, 8, 0, 7
+//		-->
+//		indexList  = (2,4)
+//		valueList  = (8,7)
+//
+//		In other words, get(2)==8, get(4)==7.
+func (v *Vector) NonZeros(indexList *[]int, valueList *[]float64) {
+	fillIndexList := indexList != nil
+	fillValueList := valueList != nil
+	if fillIndexList {
+		*indexList = make([]int, 0)
+	}
+	if fillValueList {
+		*valueList = make([]float64, 0)
+	}
+	rem := v.Size() % 2
+	var value float64
+	if rem == 1 {
+		value = v.GetQuick(0)
+		if value != 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, 0)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+	}
+
+	for i := rem; i < v.Size(); i += 2 {
+		value = v.GetQuick(i)
+		if value != 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, i)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+		value = v.GetQuick(i + 1)
+		if value != 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, i + 1)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+	}
+}
+
+// Fills the coordinates and values of the first <tt>maxCardinality</tt>
+// cells having non-zero values into the specified lists. Fills into the
+// lists, starting at index 0. After this call returns the specified lists
+// all have a new size, the number of non-zero values.
+func (v *Vector) NonZerosCardinality(indexList *[]int, valueList *[]float64, maxCardinality int) {
+	fillIndexList := indexList != nil
+	fillValueList := valueList != nil
+	if fillIndexList {
+		*indexList = make([]int, 0)
+	}
+	if fillValueList {
+		*valueList = make([]float64, 0)
+	}
+	currentSize := 0
+	for i := 0; i < v.Size(); i++ {
+		value := v.GetQuick(i)
+		if value != 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, i)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+			currentSize += 1
+		}
+		if currentSize >= maxCardinality {
+			break
+		}
+	}
+}
+
+// Fills the coordinates and values of cells having positive values into the
+// specified lists. Fills into the lists, starting at index 0. After this
+// call returns the specified lists all have a new size, the number of
+// non-zero values.
+func (v *Vector) PositiveValues(indexList *[]int, valueList *[]float64) {
+	fillIndexList := indexList != nil
+	fillValueList := valueList != nil
+	if fillIndexList {
+		*indexList = make([]int, 0)
+	}
+	if fillValueList {
+		*valueList = make([]float64, 0)
+	}
+	rem := v.Size() % 2
+	var value float64
+	if (rem == 1) {
+		value = v.GetQuick(0)
+		if value > 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, 0)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+	}
+
+	for i := rem; i < v.Size(); i += 2 {
+		value = v.GetQuick(i)
+		if value > 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, i)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+		value = v.GetQuick(i + 1)
+		if value > 0 {
+			if fillIndexList {
+				*indexList = append(*indexList, i + 1)
+			}
+			if fillValueList {
+				*valueList = append(*valueList, value)
+			}
+		}
+	}
+}
+
+// Normalizes this matrix, i.e. makes the sum of all elements equal to 1.0
+// If the matrix contains negative elements then all the values are shifted
+// to ensure non-negativity.
+func (v *Vector) Normalize() {
+	min, _ := v.MinLocation()
+	if min < 0 {
+		v.AssignFunc(Subtract(min))
+	}
+	max, _ := v.MaxLocation()
+	if max == 0 {
+		v.Assign(1.0 / float64(v.Size()))
+	} else {
+		sumScaleFactor := v.ZSum()
+		sumScaleFactor = 1.0 / sumScaleFactor
+		v.AssignFunc(Multiply(sumScaleFactor))
+	}
+}
+
+// Swaps each element v[i] with other[i].
+func (v *Vector) Swap(other VectorData) error {
+	err := v.checkSize(other)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < v.Size(); i++ {
+		tmp := v.GetQuick(i)
+		v.SetQuick(i, other.GetQuick(i))
+		other.SetQuick(i, tmp)
+	}
+	return nil
+}
+
+// Constructs and returns a 1-dimensional array containing the cell values.
+// The values are copied. So subsequent changes in <tt>values</tt> are not
+// reflected in the matrix, and vice-versa. The returned array
+// values has the form:
+//     for i:=0; i < Size; i++ {values[i] = Get(i)}
+func (v *Vector) ToArray() []float64 {
+	values := make([]float64, v.Size())
+	v.FillArray(values)
+	return values
+}
+
+// Fills the cell values into the specified 1-dimensional array.
+// The values are copied. So subsequent changes in <tt>values</tt> are not
+// reflected in the matrix, and vice-versa. The returned array
+// values has the form:
+//     for i:=0; i < Size; i++ {values[i] = Get(i)}
+func (v *Vector) FillArray(values []float64) error {
+	if len(values) < v.Size() {
+		return l4g.Error("values too small")
+	}
+	for i := 0; i < v.Size(); i++ {
+		values[i] = v.GetQuick(i)
+	}
+	return nil
+}
+
+
+// Returns the sum of all cells; Sum( x[i] ).
+func (v *Vector) ZSum() float64 {
+	if v.Size() == 0 {
+		return 0
+	}
+	return v.Aggregate(Plus, Identity)
 }
