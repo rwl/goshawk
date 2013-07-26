@@ -2,6 +2,7 @@
 package tfloat64
 
 import "bitbucket.org/rwl/colt"
+import l4g "code.google.com/p/log4go"
 
 func NewSparseVector(size int) *Vector {
 	return &Vector{
@@ -57,9 +58,40 @@ func (sv SparseVectorData) View() VectorData {
 }
 
 func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
-	return nil, nil
+	if rows * columns != sv.Size() {
+		return nil, l4g.Error("rows*columns != size")
+	}
+	M := NewSparseMatrix(rows, columns)
+	idx := 0
+	for c := 0; c < columns; c++ {
+		for r := 0; r < rows; r++ {
+			elem := sv.GetQuick(idx)
+			idx++
+			if elem != 0 {
+				M.SetQuick(r, c, elem)
+			}
+		}
+	}
+	return M, nil
 }
 
 func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
+	/*if slices * rows * columns != sv.Size() {
+		return nil, l4g.Error("slices*rows*columns != size")
+	}
+	M := NewSparseCube(slices, rows, columns)
+	idx := 0
+	for s := 0; s < slices; s++ {
+		for c := 0; c < columns; c++ {
+			for r := 0; r < rows; r++ {
+				elem := sv.GetQuick(idx)
+				idx++
+				if elem != 0 {
+					M.SetQuick(s, r, c, elem)
+				}
+			}
+		}
+	}
+	return M, nil*/
 	return nil, nil
 }
