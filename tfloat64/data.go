@@ -1,8 +1,12 @@
 
 package tfloat64
 
+import "bitbucket.org/rwl/colt"
+
 // Interface for all vector backends.
 type VectorData interface {
+	colt.BaseVectorData
+
 	// Returns the matrix cell value at coordinate "index".
 	//
 	// Provided with invalid parameters this method may cause a panic or
@@ -21,14 +25,6 @@ type VectorData interface {
 	// Precondition (unchecked): index < 0 || index >= Size().
 	SetQuick(int, float64)
 
-	IsView() bool
-
-	// Returns the number of cells.
-	Size() int
-
-	Zero() int
-	Stride() int
-
 	//	Like() VectorData
 	Like(int) VectorData
 	LikeMatrix(int, int) MatrixData
@@ -36,33 +32,17 @@ type VectorData interface {
 	ReshapeCube(int, int, int) (CubeData, error)
 	ViewSelectionLike(offsets []int) VectorData
 	View() VectorData
-
-	Elements() interface{}
-
-	VectorFlip()
-	VectorPart(index, width int) error
-	VectorStrides(stride int) error
 }
 
 type MatrixData interface {
+	colt.BaseMatrixData
+
 	GetQuick(int, int) float64
 	SetQuick(int, int, float64)
-	IsView() bool
-	Rows() int
-	Columns() int
-	RowStride() int
-	ColumnStride() int
-	RowZero() int
-	ColumnZero() int
-
-	Elements() interface{}
-
-	index(row, column int) int
 }
 
 type CubeData interface {
+	colt.BaseCubeData
+
 	GetQuick(slice, row, col int) float64
-	Slices() int
-	Rows() int
-	Columns() int
 }

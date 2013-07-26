@@ -1,6 +1,20 @@
 
 package colt
 
+type BaseMatrixData interface {
+	IsView() bool
+	Rows() int
+	Columns() int
+	RowStride() int
+	ColumnStride() int
+	RowZero() int
+	ColumnZero() int
+
+	Elements() interface{}
+
+	Index(row, column int) int
+}
+
 type CoreMatrixData struct {
 	isView              bool
 	rows, columns       int // The number of columns and rows this matrix (view) has.
@@ -46,4 +60,8 @@ func (m CoreMatrixData) RowZero() int {
 // Returns the index of the first element.
 func (m CoreMatrixData) ColumnZero() int {
 	return m.columnZero
+}
+
+func (m CoreMatrixData) Index(row, column int) int {
+	return m.RowZero() + row*m.RowStride() + m.ColumnZero() + column*m.ColumnStride()
 }

@@ -5,6 +5,23 @@ import (
 	l4g "code.google.com/p/log4go"
 )
 
+// Interface for all vector backends.
+type BaseVectorData interface {
+	IsView() bool
+
+	// Returns the number of cells.
+	Size() int
+
+	Zero() int
+	Stride() int
+
+	Elements() interface{}
+
+	VectorFlip()
+	VectorPart(index, width int) error
+	VectorStrides(stride int) error
+}
+
 // Vector data common to all vector backends.
 type CoreVectorData struct {
 	isView bool // Whether the receiver is a view or not.

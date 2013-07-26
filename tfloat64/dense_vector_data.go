@@ -81,7 +81,7 @@ func (v DenseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	}
 	M := NewMatrix(rows, columns)
 	elementsOther := M.Elements().([]float64)
-	zeroOther := M.index(0, 0)
+	zeroOther := M.Index(0, 0)
 
 	var idxOther int
 	idx := v.Zero()
