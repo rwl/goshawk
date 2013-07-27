@@ -34,9 +34,8 @@ func makeSparseVectors() (*Vector, *Vector) {
 	return A, B
 }
 
-type aggregator interface {
-	Size() int
-	GetQuick(int) float64
+type aggregateVector interface {
+	VectorData
 	Aggregate(Float64Float64Func, Float64Func) float64
 }
 
@@ -50,7 +49,7 @@ func TestSparseAggregate(t *testing.T) {
 	testAggregate(t, A)
 }
 
-func testAggregate(t *testing.T, A aggregator) {
+func testAggregate(t *testing.T, A aggregateVector) {
 	expected := 0.0
 	for i := 0; i < A.Size(); i++ {
 		elem := A.GetQuick(i)
@@ -63,9 +62,8 @@ func testAggregate(t *testing.T, A aggregator) {
 	}
 }
 
-type indexedAggregator interface {
-	Size() int
-	GetQuick(int) float64
+type aggregateIndexedVector interface {
+	VectorData
 	AggregateIndexed(Float64Float64Func, Float64Func, []int) float64
 }
 
@@ -79,7 +77,7 @@ func TestSparseAggregateIndexed(t *testing.T) {
 	testAggregateIndexed(t, A)
 }
 
-func testAggregateIndexed(t *testing.T, A indexedAggregator) {
+func testAggregateIndexed(t *testing.T, A aggregateIndexedVector) {
 	indexList := make([]int, A.Size())
 	for i := 0; i < A.Size(); i++ {
 		indexList[i] = i
@@ -95,9 +93,8 @@ func testAggregateIndexed(t *testing.T, A indexedAggregator) {
 	}
 }
 
-type vectorAggregator interface {
-	Size() int
-	GetQuick(int) float64
+type aggregatorVectorVector interface {
+	VectorData
 	AggregateVector(VectorData, Float64Float64Func, Float64Float64Func) (float64, error)
 }
 
@@ -111,7 +108,7 @@ func TestSparseAggregateVector(t *testing.T) {
 	testAggregateVector(t, A, B)
 }
 
-func testAggregateVector(t *testing.T, A vectorAggregator, B VectorData) {
+func testAggregateVector(t *testing.T, A aggregatorVectorVector, B VectorData) {
 	expected := 0.0
 	for i := 0; i < A.Size(); i++ {
 		elemA := A.GetQuick(i)
@@ -127,9 +124,8 @@ func testAggregateVector(t *testing.T, A vectorAggregator, B VectorData) {
 	}
 }
 
-type assigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignVector interface {
+	VectorData
 	Assign(float64) *Vector
 }
 
@@ -143,7 +139,7 @@ func TestSparseAssign(t *testing.T) {
 	testAssign(t, A)
 }
 
-func testAssign(t *testing.T, A assigner) {
+func testAssign(t *testing.T, A assignVector) {
 	value := rand.Float64()
 	A.Assign(value)
 	for i := 0; i < A.Size(); i++ {
@@ -154,9 +150,8 @@ func testAssign(t *testing.T, A assigner) {
 	}
 }
 
-type arrayAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignArrayVector interface {
+	VectorData
 	AssignArray([]float64) (*Vector, error)
 }
 
@@ -170,7 +165,7 @@ func TestSparseAssignArray(t *testing.T) {
 	testAssignArray(t, A)
 }
 
-func testAssignArray(t *testing.T, A arrayAssigner) {
+func testAssignArray(t *testing.T, A assignArrayVector) {
 	expected := make([]float64, A.Size())
 	for i := 0; i < A.Size(); i++ {
 		expected[i] = rand.Float64()
@@ -184,9 +179,8 @@ func testAssignArray(t *testing.T, A arrayAssigner) {
 	}
 }
 
-type funcAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignFuncVector interface {
+	VectorData
 	AssignFunc(Float64Func) *Vector
 	Copy() *Vector
 }
@@ -201,7 +195,7 @@ func TestSparseAssignFunc(t *testing.T) {
 	testAssignFunc(t, A)
 }
 
-func testAssignFunc(t *testing.T, A funcAssigner) {
+func testAssignFunc(t *testing.T, A assignFuncVector) {
 	Acopy := A.Copy()
 	A.AssignFunc(math.Acos)
 	for i := 0; i < A.Size(); i++ {
@@ -213,9 +207,8 @@ func testAssignFunc(t *testing.T, A funcAssigner) {
 	}
 }
 
-type vectorAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignVectorVector interface {
+	VectorData
 	AssignVector(VectorData) (*Vector, error)
 }
 
@@ -229,7 +222,7 @@ func TestSparseAssignVector(t *testing.T) {
 	testAssignVector(t, A, B)
 }
 
-func testAssignVector(t *testing.T, A vectorAssigner, B VectorData) {
+func testAssignVector(t *testing.T, A assignVectorVector, B VectorData) {
 	A.AssignVector(B)
 	if A.Size() != B.Size() {
 		t.Errorf("sizes must be equal: %d!=%d", A.Size(), B.Size())
@@ -243,9 +236,8 @@ func testAssignVector(t *testing.T, A vectorAssigner, B VectorData) {
 	}
 }
 
-type vectorFuncAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignVectorFuncVector interface {
+	VectorData
 	AssignVectorFunc(VectorData, Float64Float64Func) (*Vector, error)
 	Copy() *Vector
 }
@@ -260,7 +252,7 @@ func TestSparseAssignVectorFunc(t *testing.T) {
 	testAssignVectorFunc(t, A, B)
 }
 
-func testAssignVectorFunc(t *testing.T, A vectorFuncAssigner, B *Vector) {
+func testAssignVectorFunc(t *testing.T, A assignVectorFuncVector, B *Vector) {
 	Acopy := A.Copy()
 	A.AssignVectorFunc(B, Div)
 	for i := 0; i < A.Size(); i++ {
@@ -272,9 +264,8 @@ func testAssignVectorFunc(t *testing.T, A vectorFuncAssigner, B *Vector) {
 	}
 }
 
-type procedureAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignProcedureVector interface {
+	VectorData
 	AssignProcedure(Float64Procedure, float64) *Vector
 	Copy() *Vector
 }
@@ -289,7 +280,7 @@ func TestSparseAssignProcedure(t *testing.T) {
 	testAssignProcedure(t, A)
 }
 
-func testAssignProcedure(t *testing.T, A procedureAssigner) {
+func testAssignProcedure(t *testing.T, A assignProcedureVector) {
 	procedure := func(element float64) bool {
 		if math.Abs(element) > 0.1 {
 			return true
@@ -314,9 +305,8 @@ func testAssignProcedure(t *testing.T, A procedureAssigner) {
 	}
 }
 
-type procedureFuncAssigner interface {
-	Size() int
-	GetQuick(int) float64
+type assignProcedureFuncVector interface {
+	VectorData
 	AssignProcedureFunc(Float64Procedure, Float64Func) *Vector
 	Copy() *Vector
 }
@@ -331,7 +321,7 @@ func TestSparseAssignProcedureFunc(t *testing.T) {
 	testAssignProcedureFunc(t, A)
 }
 
-func testAssignProcedureFunc(t *testing.T, A procedureFuncAssigner) {
+func testAssignProcedureFunc(t *testing.T, A assignProcedureFuncVector) {
 	procedure := func(element float64) bool {
 		if math.Abs(element) > 0.1 {
 			return true
@@ -356,8 +346,8 @@ func testAssignProcedureFunc(t *testing.T, A procedureFuncAssigner) {
 	}
 }
 
-type hasCardinality interface {
-	Size() int
+type cardinalityVector interface {
+	VectorData
 	Cardinality() int
 }
 
@@ -371,14 +361,14 @@ func TestSparseCardinality(t *testing.T) {
 	testCardinality(t, A)
 }
 
-func testCardinality(t *testing.T, A hasCardinality) {
+func testCardinality(t *testing.T, A cardinalityVector) {
 	card := A.Cardinality()
 	if A.Size() != card {
 		t.Errorf("expected:%g actual:%g", A.Size(), card)
 	}
 }
 
-type equaler interface {
+type equalsVector interface {
 	Assign(float64) *Vector
 	Equals(float64) bool
 }
@@ -393,7 +383,7 @@ func TestSparseEquals(t *testing.T) {
 	testEquals(t, A)
 }
 
-func testEquals(t *testing.T, A equaler) {
+func testEquals(t *testing.T, A equalsVector) {
 	value := 1.0
 	A.Assign(value)
 	if !A.Equals(value) {
@@ -404,9 +394,10 @@ func testEquals(t *testing.T, A equaler) {
 	}
 }
 
-/*type vectorEqualer interface {
-	EqualsVector(*Vector) bool
-}*/
+type equalsVectorVector interface {
+	VectorData
+	EqualsVector(VectorData) bool
+}
 
 func TestDenseEqualsVector(t *testing.T) {
 	A, B := makeDenseVectors()
@@ -418,7 +409,7 @@ func TestSparseEqualsVector(t *testing.T) {
 	testEqualsVector(t, A, B)
 }
 
-func testEqualsVector(t *testing.T, A, B *Vector) {
+func testEqualsVector(t *testing.T, A, B equalsVectorVector) {
 	if !A.EqualsVector(A) {
 		t.Fail()
 	}
@@ -427,10 +418,9 @@ func testEqualsVector(t *testing.T, A, B *Vector) {
 	}
 }
 
-type maxLocationer interface {
+type maxLocationVector interface {
+	VectorData
 	Assign(float64) *Vector
-	SetQuick(int, float64)
-	Size() int
 	MaxLocation() (float64, int)
 }
 
@@ -444,7 +434,7 @@ func TestSparseMaxLocation(t *testing.T) {
 	testMaxLocation(t, A)
 }
 
-func testMaxLocation(t *testing.T, A maxLocationer) {
+func testMaxLocation(t *testing.T, A maxLocationVector) {
 	A.Assign(0)
 	value := 0.7
 	A.SetQuick(A.Size() / 3, value)
@@ -458,10 +448,9 @@ func testMaxLocation(t *testing.T, A maxLocationer) {
 	}
 }
 
-type minLocationer interface {
+type minLocationVector interface {
+	VectorData
 	Assign(float64) *Vector
-	SetQuick(int, float64)
-	Size() int
 	MinLocation() (float64, int)
 }
 
@@ -475,7 +464,7 @@ func TestSparseMinLocation(t *testing.T) {
 	testMinLocation(t, A)
 }
 
-func testMinLocation(t *testing.T, A minLocationer) {
+func testMinLocation(t *testing.T, A minLocationVector) {
 	A.Assign(0)
 	value := -0.7
 	A.SetQuick(A.Size() / 3, value)
@@ -489,10 +478,9 @@ func testMinLocation(t *testing.T, A minLocationer) {
 	}
 }
 
-type negativeValuer interface {
+type negativeValuesVector interface {
+	VectorData
 	Assign(float64) *Vector
-	SetQuick(int, float64)
-	Size() int
 	NegativeValues(*[]int, *[]float64)
 }
 
@@ -506,7 +494,7 @@ func TestSparseNegativeValues(t *testing.T) {
 	testGetNegativeValues(t, A)
 }
 
-func testGetNegativeValues(t *testing.T, A negativeValuer) {
+func testGetNegativeValues(t *testing.T, A negativeValuesVector) {
 	A.Assign(0)
 	A.SetQuick(A.Size() / 3, -0.7)
 	A.SetQuick(A.Size() / 2, -0.1)
@@ -533,10 +521,9 @@ func testGetNegativeValues(t *testing.T, A negativeValuer) {
 	}
 }
 
-type nonZeroer interface {
+type nonZerosVector interface {
+	VectorData
 	Assign(float64) *Vector
-	SetQuick(int, float64)
-	Size() int
 	NonZeros(*[]int, *[]float64)
 }
 
@@ -545,7 +532,12 @@ func TestDenseNonZeros(t *testing.T) {
 	testNonZeros(t, A)
 }
 
-func testNonZeros(t *testing.T, A nonZeroer) {
+func TestSparseNonZeros(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testNonZeros(t, A)
+}
+
+func testNonZeros(t *testing.T, A nonZerosVector) {
 	A.Assign(0)
 	A.SetQuick(A.Size() / 3, 0.7)
 	A.SetQuick(A.Size() / 2, 0.1)
@@ -572,10 +564,9 @@ func testNonZeros(t *testing.T, A nonZeroer) {
 	}
 }
 
-type positiveValuer interface {
+type positiveValuesVector interface {
+	VectorData
 	Assign(float64) *Vector
-	SetQuick(int, float64)
-	Size() int
 	PositiveValues(*[]int, *[]float64)
 }
 
@@ -589,7 +580,7 @@ func TestSparsePositiveValues(t *testing.T) {
 	testPositiveValues(t, A)
 }
 
-func testPositiveValues(t *testing.T, A positiveValuer) {
+func testPositiveValues(t *testing.T, A positiveValuesVector) {
 	A.Assign(0)
 	A.SetQuick(A.Size() / 3, 0.7)
 	A.SetQuick(A.Size() / 2, 0.1)
@@ -616,10 +607,9 @@ func testPositiveValues(t *testing.T, A positiveValuer) {
 	}
 }
 
-type toArrayer interface {
+type toArrayVector interface {
+	VectorData
 	ToArray() []float64
-	GetQuick(int) float64
-	Size() int
 }
 
 func TestDenseToArray(t *testing.T) {
@@ -632,7 +622,7 @@ func TestSparseToArray(t *testing.T) {
 	testToArray(t, A)
 }
 
-func testToArray(t *testing.T, A toArrayer) {
+func testToArray(t *testing.T, A toArrayVector) {
 	array := A.ToArray()
 	if A.Size() != len(array) {
 		t.Errorf("expected:%d actual:%d", A.Size(), len(array))
@@ -646,10 +636,9 @@ func testToArray(t *testing.T, A toArrayer) {
 	}
 }
 
-type fillArrayer interface {
+type fillArrayVector interface {
+	VectorData
 	FillArray([]float64) error
-	GetQuick(int) float64
-	Size() int
 }
 
 func TestDenseFillArray(t *testing.T) {
@@ -662,7 +651,7 @@ func TestSparseFillArray(t *testing.T) {
 	testFillArray(t, A)
 }
 
-func testFillArray(t *testing.T, A fillArrayer) {
+func testFillArray(t *testing.T, A fillArrayVector) {
 	array := make([]float64, A.Size())
 	err := A.FillArray(array)
 	if err != nil {
@@ -677,9 +666,8 @@ func testFillArray(t *testing.T, A fillArrayer) {
 	}
 }
 
-type reshapeMatrixer interface {
-	ReshapeMatrix(int, int) (MatrixData, error)
-	GetQuick(int) float64
+type reshapeMatrixVector interface {
+	VectorData
 }
 
 func TestDenseReshapeMatrix(t *testing.T) {
@@ -692,7 +680,7 @@ func TestSparseReshapeMatrix(t *testing.T) {
 	testReshapeMatrix(t, A)
 }
 
-func testReshapeMatrix(t *testing.T, A reshapeMatrixer) {
+func testReshapeMatrix(t *testing.T, A reshapeMatrixVector) {
 	rows := 10
 	columns := 17
 	B, err := A.ReshapeMatrix(rows, columns)
