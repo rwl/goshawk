@@ -100,7 +100,7 @@ func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error
 	if slices * rows * columns != v.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}
-	/*M := NewCube(slices, rows, columns)
+	M := NewCube(slices, rows, columns)
 	elementsOther := M.Elements().([]float64)
 	zeroOther := M.index(0, 0, 0)
 	sliceStrideOther := M.sliceStride()
@@ -119,6 +119,5 @@ func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error
 			}
 		}
 	}
-	return M, nil*/
-	return nil, nil
+	return M, nil
 }

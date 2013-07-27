@@ -18,17 +18,13 @@ type DenseMatrixData struct {
 }
 
 func (m DenseMatrixData) GetQuick(row, column int) float64 {
-	return m.elements[m.RowZero() + row*m.RowStride() + m.ColumnZero() + column*m.ColumnStride()]
+	return m.elements[m.Index(row, column)]
 }
 
 func (m DenseMatrixData) SetQuick(row, column int, value float64) {
-	m.elements[m.RowZero() + row*m.RowStride() + m.ColumnZero() + column*m.ColumnStride()] = value
+	m.elements[m.Index(row, column)] = value
 }
 
 func (m DenseMatrixData) Elements() interface{} {
 	return m.elements
-}
-
-func (m DenseMatrixData) Index(row, column int) int {
-	return m.RowZero() + row*m.RowStride() + m.ColumnZero() + column*m.ColumnStride()
 }

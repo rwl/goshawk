@@ -698,3 +698,39 @@ func testReshapeMatrix(t *testing.T, A reshapeMatrixVector) {
 		}
 	}
 }
+
+type reshapeCubeVector interface {
+	VectorData
+}
+
+func TestDenseReshapeCube(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testReshapeCube(t, A)
+}
+
+func TestSparseReshapeCube(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testReshapeCube(t, A)
+}
+
+func testReshapeCube(t *testing.T, A reshapeCubeVector) {
+	slices := 2
+	rows := 5
+	columns := 17
+	B, err := A.ReshapeCube(slices, rows, columns)
+	if err != nil {
+		t.Fail()
+	}
+	idx := 0
+	for s := 0; s < slices; s++ {
+		for c := 0; c < columns; c++ {
+			for r := 0; r < rows; r++ {
+				if math.Abs(A.GetQuick(idx) - B.GetQuick(s, r, c)) > tol {
+					t.Errorf("idx:%d s:%d r:%d c:%d expected:%g actual:%g",
+						idx, s, r, c, A.GetQuick(idx), B.GetQuick(r, c))
+				}
+				idx++
+			}
+		}
+	}
+}

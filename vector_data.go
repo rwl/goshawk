@@ -7,15 +7,13 @@ import (
 
 // Interface for all vector backends.
 type BaseVectorData interface {
-	IsView() bool
+	BaseData
 
 	// Returns the number of cells.
 	Size() int
-
 	Zero() int
 	Stride() int
-
-	Elements() interface{}
+	Index(int) int
 
 	VectorFlip()
 	VectorPart(index, width int) error
@@ -24,19 +22,14 @@ type BaseVectorData interface {
 
 // Vector data common to all vector backends.
 type CoreVectorData struct {
-	isView bool // Whether the receiver is a view or not.
+	CoreData
 	size   int  // The number of cells this matrix (view) has.
 	zero   int  // The index of the first element.
 	stride int  // The number of indexes between any two elements.
 }
 
 func NewCoreVectorData(isView bool, size, zero, stride int) CoreVectorData {
-	return CoreVectorData{isView, size, zero, stride}
-}
-
-// Returns whether the receiver is a view or not.
-func (v CoreVectorData) IsView() bool {
-	return v.isView
+	return CoreVectorData{CoreData{isView}, size, zero, stride}
 }
 
 // Returns the number of cells this vector (view) has.
@@ -52,6 +45,11 @@ func (v CoreVectorData) Stride() int {
 // Returns the index of the first element.
 func (v CoreVectorData) Zero() int {
 	return v.zero
+}
+
+// Returns the position of the given coordinate within the (virtual or non-virtual) internal 1-dimensional array.
+func (v CoreVectorData) Index(rank int) int {
+	return v.zero + rank * v.stride
 }
 
 func (v CoreVectorData) checkRange(index, width int) error {
