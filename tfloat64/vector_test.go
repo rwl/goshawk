@@ -851,3 +851,30 @@ func testViewProcedure(t *testing.T, A viewProcedureVector) {
 		}
 	}
 }
+
+type viewVector interface {
+	VectorData
+	View([]int) (*Vector, error)
+}
+
+func TestDenseView(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testView(t, A)
+}
+
+func TestSparseView(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testView(t, A)
+}
+
+func testView(t *testing.T, A viewVector) {
+	indexes := []int { 5, 11, 22, 37, 101 }
+	b, _ := A.View(indexes)
+	for i := 0; i < len(indexes); i++ {
+		expected := A.GetQuick(indexes[i])
+		result := b.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
