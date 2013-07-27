@@ -12,6 +12,6 @@ type CoreData struct {
 }
 
 // Returns whether the receiver is a view or not.
-func (v CoreData) IsView() bool {
+func (v *CoreData) IsView() bool {
 	return v.isView
 }

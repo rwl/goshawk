@@ -794,7 +794,6 @@ func testViewFlip(t *testing.T, A viewFlipVector) {
 		expected := A.GetQuick(i)
 		result := b.GetQuick(A.Size() - 1 - i)
 		if math.Abs(expected - result) > tol {
-			t.Errorf("zero:%d stride:%d", b.Zero(), b.Stride())
 			t.Errorf("expected:%g actual:%g", expected, result)
 		}
 	}

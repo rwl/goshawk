@@ -6,7 +6,7 @@ import l4g "code.google.com/p/log4go"
 
 func NewSparseVector(size int) *Vector {
 	return &Vector{
-		SparseVectorData{
+		&SparseVectorData{
 			colt.NewCoreVectorData(false, size, 0, 1),
 			make(map[int]float64),
 		},
@@ -14,15 +14,15 @@ func NewSparseVector(size int) *Vector {
 }
 
 type SparseVectorData struct {
-	colt.CoreVectorData
+	*colt.CoreVectorData
 	elements map[int]float64 // The elements of the matrix.
 }
 
-func (sv SparseVectorData) GetQuick(index int) float64 {
+func (sv *SparseVectorData) GetQuick(index int) float64 {
 	return sv.elements[sv.Zero() + index * sv.Stride()]
 }
 
-func (sv SparseVectorData) SetQuick(index int, value float64) {
+func (sv *SparseVectorData) SetQuick(index int, value float64) {
 	i := sv.Zero() + index * sv.Stride()
 	if value == 0.0 {
 		delete(sv.elements, i)
@@ -31,33 +31,33 @@ func (sv SparseVectorData) SetQuick(index int, value float64) {
 	}
 }
 
-func (sv SparseVectorData) Elements() interface{} {
+func (sv *SparseVectorData) Elements() interface{} {
 	return sv.elements
 }
 
-func (sv SparseVectorData) Like(size int) VectorData {
+func (sv *SparseVectorData) Like(size int) VectorData {
 	return &SparseVectorData{
 		colt.NewCoreVectorData(false, size, 0, 1),
 		make(map[int]float64),
 	}
 }
 
-func (sv SparseVectorData) LikeMatrix(rows, columns int) MatrixData {
+func (sv *SparseVectorData) LikeMatrix(rows, columns int) MatrixData {
 	return nil
 }
 
-func (sv SparseVectorData) ViewSelectionLike(offsets []int) VectorData {
+func (sv *SparseVectorData) ViewSelectionLike(offsets []int) VectorData {
 	return nil
 }
 
-func (sv SparseVectorData) ViewVectorData() VectorData {
+func (sv *SparseVectorData) ViewVectorData() VectorData {
 	return &SparseVectorData{
 		colt.NewCoreVectorData(sv.IsView(), sv.Size(), sv.Zero(), sv.Stride()),
 		sv.elements,
 	}
 }
 
-func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
+func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	if rows * columns != sv.Size() {
 		return nil, l4g.Error("rows*columns != size")
 	}
@@ -75,7 +75,7 @@ func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) 
 	return M, nil
 }
 
-func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
+func (sv *SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
 	if slices * rows * columns != sv.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}

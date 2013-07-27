@@ -5,7 +5,7 @@ import "bitbucket.org/rwl/colt"
 
 func NewSparseCube(slices, rows, columns int) *Cube {
 	return &Cube{
-		SparseCubeData{
+		&SparseCubeData{
 			colt.NewCoreCubeData(false, slices, rows, columns, rows*columns, columns, 1, 0, 0, 0),
 			make(map[int]float64),
 		},
@@ -13,15 +13,15 @@ func NewSparseCube(slices, rows, columns int) *Cube {
 }
 
 type SparseCubeData struct {
-	colt.CoreCubeData
+	*colt.CoreCubeData
 	elements map[int]float64 // The elements of this matrix.
 }
 
-func (m SparseCubeData) GetQuick(slice, row, column int) float64 {
+func (m *SparseCubeData) GetQuick(slice, row, column int) float64 {
 	return m.elements[m.Index(slice, row, column)]
 }
 
-func (m SparseCubeData) SetQuick(slice, row, column int, value float64) {
+func (m *SparseCubeData) SetQuick(slice, row, column int, value float64) {
 	index := m.SliceZero() + slice * m.SliceStride() + m.RowZero() + row * m.RowStride() + m.ColumnZero() + column * m.ColumnStride()
 	if value == 0 {
 		delete(m.elements, index)
@@ -30,6 +30,6 @@ func (m SparseCubeData) SetQuick(slice, row, column int, value float64) {
 	}
 }
 
-func (m SparseCubeData) Elements() interface{} {
+func (m *SparseCubeData) Elements() interface{} {
 	return m.elements
 }

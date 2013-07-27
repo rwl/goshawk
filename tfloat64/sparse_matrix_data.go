@@ -5,7 +5,7 @@ import "bitbucket.org/rwl/colt"
 
 func NewSparseMatrix(rows, columns int) *Matrix {
 	return &Matrix{
-		SparseMatrixData{
+		&SparseMatrixData{
 			colt.NewCoreMatrixData(false, rows, columns, columns, 1, 0, 0),
 			make(map[int]float64),
 		},
@@ -13,15 +13,15 @@ func NewSparseMatrix(rows, columns int) *Matrix {
 }
 
 type SparseMatrixData struct {
-	colt.CoreMatrixData
+	*colt.CoreMatrixData
 	elements map[int]float64 // The elements of this matrix.
 }
 
-func (m SparseMatrixData) GetQuick(row, column int) float64 {
+func (m *SparseMatrixData) GetQuick(row, column int) float64 {
 	return m.elements[m.RowZero() + row * m.RowStride() + m.ColumnZero() + column * m.ColumnStride()]
 }
 
-func (m SparseMatrixData) SetQuick(row, column int, value float64) {
+func (m *SparseMatrixData) SetQuick(row, column int, value float64) {
 	index := m.RowZero() + row * m.RowStride() + m.ColumnZero() + column * m.ColumnStride()
 	if value == 0 {
 		delete(m.elements, index)
@@ -30,6 +30,6 @@ func (m SparseMatrixData) SetQuick(row, column int, value float64) {
 	}
 }
 
-func (m SparseMatrixData) Elements() interface{} {
+func (m *SparseMatrixData) Elements() interface{} {
 	return m.elements
 }

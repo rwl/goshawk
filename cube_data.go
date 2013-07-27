@@ -19,7 +19,7 @@ type BaseCubeData interface {
 }
 
 type CoreCubeData struct {
-	CoreData
+	*CoreData
 
 	// The number of slices this cube (view) has.
 	slices int
@@ -43,56 +43,56 @@ type CoreCubeData struct {
 	sliceZero, rowZero, columnZero int
 }
 
-func NewCoreCubeData(isView bool, slices, rows, columns, sliceStride, rowStride, columnStride, sliceZero, rowZero, columnZero int) CoreCubeData {
-	return CoreCubeData{CoreData{isView}, slices, rows, columns, sliceStride, rowStride, columnStride, sliceZero, rowZero, columnZero}
+func NewCoreCubeData(isView bool, slices, rows, columns, sliceStride, rowStride, columnStride, sliceZero, rowZero, columnZero int) *CoreCubeData {
+	return &CoreCubeData{&CoreData{isView}, slices, rows, columns, sliceStride, rowStride, columnStride, sliceZero, rowZero, columnZero}
 }
 
 // Returns the number of slices this cube (view) has.
-func (m CoreCubeData) Slices() int {
+func (m *CoreCubeData) Slices() int {
 	return m.slices
 }
 
 // Returns the number of rows this cube (view) has.
-func (m CoreCubeData) Rows() int {
+func (m *CoreCubeData) Rows() int {
 	return m.rows
 }
 
 // Returns the number of columns this cube (view) has.
-func (m CoreCubeData) Columns() int {
+func (m *CoreCubeData) Columns() int {
 	return m.columns
 }
 
 // Returns the number of elements between two slices, i.e. index(k+1,i,j) - index(k,i,j).
-func (m CoreCubeData) SliceStride() int {
+func (m *CoreCubeData) SliceStride() int {
 	return m.sliceStride
 }
 
 // Returns the number of elements between two rows, i.e. index(i+1,j,k) - index(i,j,k).
-func (m CoreCubeData) RowStride() int {
+func (m *CoreCubeData) RowStride() int {
 	return m.rowStride
 }
 
 // The number of elements between two columns, i.e. index(i,j+1,k) - index(i,j,k).
-func (m CoreCubeData) ColumnStride() int {
+func (m *CoreCubeData) ColumnStride() int {
 	return m.columnStride
 }
 
 // Returns the index of the first element.
-func (m CoreCubeData) SliceZero() int {
+func (m *CoreCubeData) SliceZero() int {
 	return m.sliceZero
 }
 
 // Returns the index of the first element.
-func (m CoreCubeData) RowZero() int {
+func (m *CoreCubeData) RowZero() int {
 	return m.rowZero
 }
 
 // Returns the index of the first element.
-func (m CoreCubeData) ColumnZero() int {
+func (m *CoreCubeData) ColumnZero() int {
 	return m.columnZero
 }
 
 // Returns the position of the given coordinate within the (virtual or non-virtual) internal 1-dimensional array.
-func (m CoreCubeData) Index(slice, row, column int) int {
+func (m *CoreCubeData) Index(slice, row, column int) int {
 	return m.SliceZero() + slice * m.SliceStride() + m.RowZero() + row * m.RowStride() + m.ColumnZero() + column * m.ColumnStride()
 }
