@@ -76,7 +76,7 @@ func (sv SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) 
 }
 
 func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
-	/*if slices * rows * columns != sv.Size() {
+	if slices * rows * columns != sv.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}
 	M := NewSparseCube(slices, rows, columns)
@@ -92,6 +92,5 @@ func (sv SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, err
 			}
 		}
 	}
-	return M, nil*/
-	return nil, nil
+	return M, nil
 }

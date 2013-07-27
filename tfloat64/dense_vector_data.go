@@ -102,20 +102,17 @@ func (v DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error
 	}
 	M := NewCube(slices, rows, columns)
 	elementsOther := M.Elements().([]float64)
-	zeroOther := M.index(0, 0, 0)
-	sliceStrideOther := M.sliceStride()
-	rowStrideOther := M.rowStride()
-	columnStrideOther := M.columnStride()
+	zeroOther := M.Index(0, 0, 0)
 
 	var idxOther int
-	idx := v.zero
+	idx := v.Zero()
 	for s := 0; s < slices; s++ {
 		for c := 0; c < columns; c++ {
-			idxOther = zeroOther + s * sliceStrideOther + c * columnStrideOther
+			idxOther = zeroOther + s * M.SliceStride() + c * M.ColumnStride()
 			for r := 0; r < rows; r++ {
 				elementsOther[idxOther] = v.elements[idx]
-				idxOther += rowStrideOther
-				idx += v.stride
+				idxOther += M.RowStride()
+				idx += v.Stride()
 			}
 		}
 	}

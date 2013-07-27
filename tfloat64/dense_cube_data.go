@@ -3,7 +3,7 @@ package tfloat64
 
 import "bitbucket.org/rwl/colt"
 
-func NewCube(slices, rows, columns int) *Matrix {
+func NewCube(slices, rows, columns int) *Cube {
 	return &Cube{
 		DenseCubeData{
 			colt.NewCoreCubeData(false, slices, rows, columns, rows*columns, columns, 1, 0, 0, 0),
@@ -21,10 +21,10 @@ func (m DenseCubeData) GetQuick(slice, row, column int) float64 {
 	return m.elements[m.Index(slice, row, column)]
 }
 
-func (m DenseMatrixData) SetQuick(slice, row, column int, value float64) {
+func (m DenseCubeData) SetQuick(slice, row, column int, value float64) {
 	m.elements[m.Index(slice, row, column)] = value
 }
 
-func (m DenseMatrixData) Elements() interface{} {
+func (m DenseCubeData) Elements() interface{} {
 	return m.elements
 }

@@ -44,5 +44,6 @@ type MatrixData interface {
 type CubeData interface {
 	colt.BaseCubeData
 
-	GetQuick(slice, row, col int) float64
+	GetQuick(int, int, int) float64
+	SetQuick(int, int, int, float64)
 }

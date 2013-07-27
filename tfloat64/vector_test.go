@@ -727,7 +727,7 @@ func testReshapeCube(t *testing.T, A reshapeCubeVector) {
 			for r := 0; r < rows; r++ {
 				if math.Abs(A.GetQuick(idx) - B.GetQuick(s, r, c)) > tol {
 					t.Errorf("idx:%d s:%d r:%d c:%d expected:%g actual:%g",
-						idx, s, r, c, A.GetQuick(idx), B.GetQuick(r, c))
+						idx, s, r, c, A.GetQuick(idx), B.GetQuick(s, r, c))
 				}
 				idx++
 			}

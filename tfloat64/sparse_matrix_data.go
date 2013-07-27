@@ -14,7 +14,7 @@ func NewSparseMatrix(rows, columns int) *Matrix {
 
 type SparseMatrixData struct {
 	colt.CoreMatrixData
-	elements map[int]float64 // The elements of this matrix. TODO: use int64?
+	elements map[int]float64 // The elements of this matrix.
 }
 
 func (m SparseMatrixData) GetQuick(row, column int) float64 {
@@ -32,8 +32,4 @@ func (m SparseMatrixData) SetQuick(row, column int, value float64) {
 
 func (m SparseMatrixData) Elements() interface{} {
 	return m.elements
-}
-
-func (m SparseMatrixData) Index(row, column int) int {
-	return m.RowZero() + row*m.RowStride() + m.ColumnZero() + column*m.ColumnStride()
 }
