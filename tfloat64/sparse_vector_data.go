@@ -19,11 +19,11 @@ type SparseVectorData struct {
 }
 
 func (sv *SparseVectorData) GetQuick(index int) float64 {
-	return sv.elements[sv.Zero() + index * sv.Stride()]
+	return sv.elements[sv.Index(index)]
 }
 
 func (sv *SparseVectorData) SetQuick(index int, value float64) {
-	i := sv.Zero() + index * sv.Stride()
+	i := sv.Index(index)
 	if value == 0.0 {
 		delete(sv.elements, i)
 	} else {
@@ -47,7 +47,13 @@ func (sv *SparseVectorData) LikeMatrix(rows, columns int) MatrixData {
 }
 
 func (sv *SparseVectorData) ViewSelectionLike(offsets []int) VectorData {
-	return nil
+	return &SelectedSparseVectorData{
+		&SparseVectorData{
+			colt.NewCoreVectorData(false, len(offsets), 0, 1),
+			sv.elements,
+		},
+		offsets, 0,
+	}
 }
 
 func (sv *SparseVectorData) ViewVectorData() VectorData {
@@ -57,7 +63,7 @@ func (sv *SparseVectorData) ViewVectorData() VectorData {
 	}
 }
 
-func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
+func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != sv.Size() {
 		return nil, l4g.Error("rows*columns != size")
 	}
@@ -75,7 +81,7 @@ func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error)
 	return M, nil
 }
 
-func (sv *SparseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
+func (sv *SparseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != sv.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}

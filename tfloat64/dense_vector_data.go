@@ -21,11 +21,11 @@ type DenseVectorData struct {
 }
 
 func (v *DenseVectorData) GetQuick(index int) float64 {
-	return v.elements[v.Zero() + index*v.Stride()]
+	return v.elements[v.Index(index)]
 }
 
 func (v *DenseVectorData) SetQuick(index int, value float64) {
-	v.elements[v.Zero() + index*v.Stride()] = value
+	v.elements[v.Index(index)] = value
 }
 
 func (v *DenseVectorData) Elements() interface{} {
@@ -55,17 +55,13 @@ func (v *DenseVectorData) LikeMatrix(rows, columns int) MatrixData {
 }
 
 func (v *DenseVectorData) ViewSelectionLike(offsets []int) VectorData {
-	return nil/*SelectedDenseVectorData{
-		CoreVectorData: CoreVectorData{
-			isView: false,
-			size: size,
-			zero: 0,
-			stride: 1,
+	return &SelectedDenseVectorData{
+		&DenseVectorData{
+			colt.NewCoreVectorData(false, len(offsets), 0, 1),
+			v.elements,
 		},
-		elements: v.elements,
-		offsets: offsets,
-		offset: 0,
-	}*/
+		offsets, 0,
+	}
 }
 
 func (v *DenseVectorData) ViewVectorData() VectorData {
@@ -75,7 +71,7 @@ func (v *DenseVectorData) ViewVectorData() VectorData {
 	}
 }
 
-func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
+func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != v.Size() {
 		return nil, l4g.Error("rows*columns != size")
 	}
@@ -96,7 +92,7 @@ func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (MatrixData, error) {
 	return M, nil
 }
 
-func (v *DenseVectorData) ReshapeCube(slices, rows, columns int) (CubeData, error) {
+func (v *DenseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != v.Size() {
 		return nil, l4g.Error("slices*rows*columns != size")
 	}

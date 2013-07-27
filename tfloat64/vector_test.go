@@ -798,3 +798,56 @@ func testViewFlip(t *testing.T, A viewFlipVector) {
 		}
 	}
 }
+
+type viewPartVector interface {
+	VectorData
+	ViewPart(int, int) *Vector
+}
+
+func TestDenseViewPart(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testViewPart(t, A)
+}
+
+func TestSparseViewPart(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testViewPart(t, A)
+}
+
+func testViewPart(t *testing.T, A viewPartVector) {
+	b := A.ViewPart(15, 11)
+	for i := 0; i < 11; i++ {
+		expected := A.GetQuick(15 + i)
+		result := b.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type viewProcedureVector interface {
+	VectorData
+	ViewProcedure(Float64Procedure) *Vector
+}
+
+func TestDenseViewProcedure(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testViewProcedure(t, A)
+}
+
+func TestSparseViewProcedure(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testViewProcedure(t, A)
+}
+
+func testViewProcedure(t *testing.T, A viewProcedureVector) {
+	b := A.ViewProcedure(func(element float64) bool {
+		return math.Remainder(element, 2) == 0
+	})
+	for i := 0; i < b.Size(); i++ {
+		el := b.GetQuick(i)
+		if math.Remainder(el, 2) != 0 {
+			t.Fail()
+		}
+	}
+}

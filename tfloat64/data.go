@@ -28,8 +28,10 @@ type VectorData interface {
 	//	Like() VectorData
 	Like(int) VectorData
 	LikeMatrix(int, int) MatrixData
-	ReshapeMatrix(int, int) (MatrixData, error)
-	ReshapeCube(int, int, int) (CubeData, error)
+	ReshapeMatrix(int, int) (*Matrix, error)
+	ReshapeCube(int, int, int) (*Cube, error)
+	// Construct and returns a new selection view using the offsets of
+	// the visible elements.
 	ViewSelectionLike(offsets []int) VectorData
 	ViewVectorData() VectorData
 }
