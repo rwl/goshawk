@@ -50,7 +50,7 @@ func (sv SparseVectorData) ViewSelectionLike(offsets []int) VectorData {
 	return nil
 }
 
-func (sv SparseVectorData) View() VectorData {
+func (sv SparseVectorData) ViewVectorData() VectorData {
 	return &SparseVectorData{
 		colt.NewCoreVectorData(sv.IsView(), sv.Size(), sv.Zero(), sv.Stride()),
 		sv.elements,

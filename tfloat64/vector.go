@@ -60,6 +60,19 @@ func (v *Vector) Copy() *Vector {
 	return copy
 }
 
+// Constructs and returns a new view equal to the receiver. The view is a
+// shallow clone.
+//
+// Note that the view is not a deep copy. The returned matrix is
+// backed by this matrix, so changes in the returned matrix are reflected in
+// this matrix, and vice-versa.
+//
+// Use Copy() to construct an independent deep copy rather than a
+// new view.
+func (v *Vector) ViewVector() *Vector {
+	return &Vector{v.ViewVectorData()}
+}
+
 // Returns the number of cells having non-zero values; ignores tolerance.
 func (v *Vector) Cardinality() int {
 	cardinality := 0

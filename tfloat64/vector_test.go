@@ -734,3 +734,68 @@ func testReshapeCube(t *testing.T, A reshapeCubeVector) {
 		}
 	}
 }
+
+type swapVector interface {
+	VectorData
+	Swap(VectorData) error
+	Copy() *Vector
+}
+
+func TestDenseSwap(t *testing.T) {
+	A, B := makeDenseVectors()
+	testSwap(t, A, B)
+}
+
+func TestSparseSwap(t *testing.T) {
+	A, B := makeSparseVectors()
+	testSwap(t, A, B)
+}
+
+func testSwap(t *testing.T, A, B swapVector) {
+	Acopy := A.Copy()
+	Bcopy := B.Copy()
+	A.Swap(B)
+	for i := 0; i < A.Size(); i++ {
+		expected := Bcopy.GetQuick(i)
+		result := A.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+
+		expected = Acopy.GetQuick(i)
+		result = B.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type viewFlipVector interface {
+	VectorData
+	ViewFlip() *Vector
+}
+
+func TestDenseViewFlip(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testViewFlip(t, A)
+}
+
+func TestSparseViewFlip(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testViewFlip(t, A)
+}
+
+func testViewFlip(t *testing.T, A viewFlipVector) {
+	b := A.ViewFlip()
+	if A.Size() != b.Size() {
+		t.Errorf("expected:%d actual:%d", A.Size(), b.Size())
+	}
+	for i := 0; i < A.Size(); i++ {
+		expected := A.GetQuick(i)
+		result := b.GetQuick(A.Size() - 1 - i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("zero:%d stride:%d", b.Zero(), b.Stride())
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}

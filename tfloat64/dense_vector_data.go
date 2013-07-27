@@ -68,7 +68,7 @@ func (v DenseVectorData) ViewSelectionLike(offsets []int) VectorData {
 	}*/
 }
 
-func (v DenseVectorData) View() VectorData {
+func (v DenseVectorData) ViewVectorData() VectorData {
 	return &DenseVectorData{
 		colt.NewCoreVectorData(v.IsView(), v.Size(), v.Zero(), v.Stride()),
 		v.elements,

@@ -31,7 +31,7 @@ type VectorData interface {
 	ReshapeMatrix(int, int) (MatrixData, error)
 	ReshapeCube(int, int, int) (CubeData, error)
 	ViewSelectionLike(offsets []int) VectorData
-	View() VectorData
+	ViewVectorData() VectorData
 }
 
 type MatrixData interface {
