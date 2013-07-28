@@ -71,6 +71,12 @@ func (m *Matrix) Set(row, column int, value float64) error {
 	return nil
 }
 
+func (m *Matrix) Copy() *Matrix {
+	copy := &Matrix{m.Like(m.Rows(), m.Columns())}
+	copy.AssignMatrix(m)
+	return copy
+}
+
 func (m *Matrix) Cardinality() int {
 	cardinality := 0
 	for r := 0; r < m.Rows(); r++ {

@@ -33,3 +33,10 @@ func (m *SparseMatrixData) SetQuick(row, column int, value float64) {
 func (m *SparseMatrixData) Elements() interface{} {
 	return m.elements
 }
+
+func (m *SparseMatrixData) Like(rows, columns int) MatrixData {
+	return &SparseMatrixData{
+		colt.NewCoreMatrixData(false, rows, columns, columns, 1, 0, 0),
+		make(map[int]float64),
+	}
+}

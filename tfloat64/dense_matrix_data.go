@@ -28,3 +28,10 @@ func (m *DenseMatrixData) SetQuick(row, column int, value float64) {
 func (m *DenseMatrixData) Elements() interface{} {
 	return m.elements
 }
+
+func (m *DenseMatrixData) Like(rows, columns int) MatrixData {
+	return &DenseMatrixData{
+		colt.NewCoreMatrixData(false, rows, columns, columns, 1, 0, 0),
+		make([]float64, rows*columns),
+	}
+}
