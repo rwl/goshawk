@@ -1,8 +1,10 @@
 
 package tfloat64
 
-import "bitbucket.org/rwl/colt"
-import l4g "code.google.com/p/log4go"
+import (
+	"bitbucket.org/rwl/colt"
+	"fmt"
+)
 
 // Selection view on sparse 1-d matrices holding float64 elements.
 //
@@ -45,7 +47,7 @@ func (v *SelectedSparseVectorData) ViewVectorData() VectorData {
 
 func (v *SelectedSparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != v.Size() {
-		return nil, l4g.Error("rows*columns != size")
+		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewSparseMatrix(rows, columns)
 	idx := 0
@@ -60,7 +62,7 @@ func (v *SelectedSparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, er
 
 func (v *SelectedSparseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != v.Size() {
-		return nil, l4g.Error("slices*rows*columns != size")
+		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewSparseCube(slices, rows, columns)
 	idx := 0

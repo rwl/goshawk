@@ -2,8 +2,8 @@
 package tfloat64
 
 import (
-	l4g "code.google.com/p/log4go"
 	"bitbucket.org/rwl/colt"
+	"fmt"
 )
 
 func NewVector(size int) *Vector {
@@ -73,7 +73,7 @@ func (v *DenseVectorData) ViewVectorData() VectorData {
 
 func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != v.Size() {
-		return nil, l4g.Error("rows*columns != size")
+		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewMatrix(rows, columns)
 	elementsOther := M.Elements().([]float64)
@@ -94,7 +94,7 @@ func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 
 func (v *DenseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != v.Size() {
-		return nil, l4g.Error("slices*rows*columns != size")
+		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewCube(slices, rows, columns)
 	elementsOther := M.Elements().([]float64)

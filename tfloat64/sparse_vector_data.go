@@ -1,8 +1,10 @@
 
 package tfloat64
 
-import "bitbucket.org/rwl/colt"
-import l4g "code.google.com/p/log4go"
+import (
+	"bitbucket.org/rwl/colt"
+	"fmt"
+)
 
 func NewSparseVector(size int) *Vector {
 	return &Vector{
@@ -65,7 +67,7 @@ func (sv *SparseVectorData) ViewVectorData() VectorData {
 
 func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != sv.Size() {
-		return nil, l4g.Error("rows*columns != size")
+		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewSparseMatrix(rows, columns)
 	idx := 0
@@ -83,7 +85,7 @@ func (sv *SparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 
 func (sv *SparseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != sv.Size() {
-		return nil, l4g.Error("slices*rows*columns != size")
+		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewSparseCube(slices, rows, columns)
 	idx := 0

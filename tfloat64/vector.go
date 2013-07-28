@@ -2,7 +2,7 @@
 package tfloat64
 
 import (
-	l4g "code.google.com/p/log4go"
+	"fmt"
 	"sort"
 )
 
@@ -17,7 +17,7 @@ func (v *Vector) checkSize(other VectorData) error {
 //		formatter := NewFormatter()
 //		return l4g.Error("Incompatible sizes: %s and %s",
 //			formatter.VectorShape(v), formatter.VectorShape(other))
-		return l4g.Error("Incompatible sizes: %d and %d",
+		return fmt.Errorf("Incompatible sizes: %d and %d",
 			v.Size(), other.Size())
 	}
 	return nil
@@ -36,7 +36,7 @@ func (v *Vector) StringShort() string {
 // Returns the matrix cell value at coordinate "index".
 func (v *Vector) Get(index int) (float64, error) {
 	if index < 0 || index >= v.Size() {
-		return 0.0, l4g.Error("Attempted to access %s at index=%d",
+		return 0.0, fmt.Errorf("Attempted to access %s at index=%d",
 			v.StringShort(), index)
 	}
 	return v.GetQuick(index), nil
@@ -45,7 +45,7 @@ func (v *Vector) Get(index int) (float64, error) {
 // Sets the matrix cell at coordinate index to the specified value.
 func (v *Vector) Set(index int, value float64) error {
 	if index < 0 || index >= v.Size() {
-		return l4g.Error("Attempted to access %s at index=%d",
+		return fmt.Errorf("Attempted to access %s at index=%d",
 			v.StringShort(), index)
 	}
 	v.SetQuick(index, value)
@@ -371,7 +371,7 @@ func (v *Vector) ToArray() []float64 {
 //     for i:=0; i < Size; i++ {values[i] = Get(i)}
 func (v *Vector) FillArray(values []float64) error {
 	if len(values) < v.Size() {
-		return l4g.Error("values too small")
+		return fmt.Errorf("values too small")
 	}
 	for i := 0; i < v.Size(); i++ {
 		values[i] = v.GetQuick(i)

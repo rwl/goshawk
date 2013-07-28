@@ -2,7 +2,7 @@
 package tfloat64
 
 import (
-	l4g "code.google.com/p/log4go"
+	"fmt"
 )
 
 // Assigns the result of a function to each cell; x[i] = f(x[i]).
@@ -28,7 +28,7 @@ func (v *Vector) Assign(value float64) *Vector {
 // reflected in the matrix, and vice-versa.
 func (v *Vector) AssignArray(values []float64) (*Vector, error) {
 	if len(values) != v.Size() {
-		return v, l4g.Error("Must have same number of cells: length=%d size()=%d",
+		return v, fmt.Errorf("Must have same number of cells: length=%d size()=%d",
 			len(values), v.Size())
 	}
 	for i, val := range values {
@@ -44,9 +44,9 @@ func (v *Vector) AssignArray(values []float64) (*Vector, error) {
 // using an intermediate auxiliary deep copy of "other".
 func (v *Vector) AssignVector(other VectorData) (*Vector, error) {
 	if v.Size() != other.Size() {
-		return v, l4g.Error("Incompatible sizes: %d and %d",
+		return v, fmt.Errorf("Incompatible sizes: %d and %d",
 			v.Size(), other.Size())
-//		return v, l4g.Error("Incompatible sizes: %s and %s",
+//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
 //			v.StringShort(), NewFormatter().VectorShape(other))
 	}
 	for i := 0; i < v.Size(); i++ {
@@ -60,9 +60,9 @@ func (v *Vector) AssignVector(other VectorData) (*Vector, error) {
 // current cell's value of "y".
 func (v *Vector) AssignVectorFunc(y VectorData, f Float64Float64Func) (*Vector, error) {
 	if y.Size() != v.Size() {
-		return v, l4g.Error("Incompatible sizes: %d and %d",
+		return v, fmt.Errorf("Incompatible sizes: %d and %d",
 				y.Size(), v.Size())
-//		return v, l4g.Error("Incompatible sizes: %s and %s",
+//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
 //			v.StringShort(), NewFormatter().VectorShape(y))
 	}
 	// the general case x[i] = f(x[i],y[i])

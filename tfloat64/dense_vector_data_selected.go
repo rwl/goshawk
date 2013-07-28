@@ -1,8 +1,10 @@
 
 package tfloat64
 
-import "bitbucket.org/rwl/colt"
-import l4g "code.google.com/p/log4go"
+import (
+	"bitbucket.org/rwl/colt"
+	"fmt"
+)
 
 // Selection view on dense 1-d matrices holding float64 elements.
 //
@@ -45,7 +47,7 @@ func (v *SelectedDenseVectorData) ViewVectorData() VectorData {
 
 func (v *SelectedDenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	if rows * columns != v.Size() {
-		return nil, l4g.Error("rows*columns != size")
+		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewMatrix(rows, columns)
 	elementsOther := M.Elements().([]float64)
@@ -65,7 +67,7 @@ func (v *SelectedDenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, err
 
 func (v *SelectedDenseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
 	if slices * rows * columns != v.Size() {
-		return nil, l4g.Error("slices*rows*columns != size")
+		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewCube(slices, rows, columns)
 	elementsOther := M.Elements().([]float64)

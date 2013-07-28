@@ -1,9 +1,7 @@
 
 package colt
 
-import (
-	l4g "code.google.com/p/log4go"
-)
+import "fmt"
 
 // Interface for all vector backends.
 type BaseVectorData interface {
@@ -54,7 +52,7 @@ func (v *CoreVectorData) Index(rank int) int {
 
 func (v *CoreVectorData) checkRange(index, width int) error {
 	if index < 0 || index + width > v.Size() {
-		return l4g.Error("index: %d, width: %d, size=%d", index, width, v.Size())
+		return fmt.Errorf("index: %d, width: %d, size=%d", index, width, v.Size())
 	}
 	return nil
 }
@@ -85,7 +83,7 @@ func (v *CoreVectorData) VectorPart(index, width int) error {
 // Self modifying version of ViewStrides().
 func (v *CoreVectorData) VectorStrides(stride int) error {
 	if stride <= 0 {
-		return l4g.Error("illegal stride: %s", stride)
+		return fmt.Errorf("illegal stride: %s", stride)
 	}
 	v.stride *= stride
 	if v.size != 0 {

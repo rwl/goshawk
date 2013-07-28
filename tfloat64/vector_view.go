@@ -2,7 +2,8 @@
 package tfloat64
 
 import (
-	l4g "code.google.com/p/log4go"
+	"fmt"
+	"log"
 )
 
 // Constructs and returns a new flip view. What used to be index
@@ -62,7 +63,7 @@ func (v *Vector) View(indexes []int) (*Vector, error) {
 	} else {
 		for _, index := range indexes {
 			if index < 0 || index >= v.Size() {
-				return nil, l4g.Error("Attempted to access %s at index=%d",
+				return nil, fmt.Errorf("Attempted to access %s at index=%d",
 					v.StringShort(), index)
 			}
 		}
@@ -102,7 +103,7 @@ func (v *Vector) ViewProcedure(condition Float64Procedure) *Vector {
 // Sorts the vector into ascending order, according to the natural
 // ordering. This sort is guaranteed to be stable.
 func (v *Vector) ViewSorted() *Vector {
-	l4g.Crashf("sort not implemented")
+	log.Fatal("sort not implemented")
 	return v//mergeSort.sortVector(v) TODO: implement sort
 }
 
