@@ -129,3 +129,159 @@ func testMatrixAssignMatrix(t *testing.T, A, B assignMatrixMatrix) {
 		}
 	}
 }
+
+type assignMatrixFuncMatrix interface {
+	MatrixData
+	AssignMatrixFunc(y MatrixData, f Float64Float64Func) (*Matrix, error)
+	Copy() *Matrix
+}
+
+func TestDenseMatrixAssignMatrixFunc(t *testing.T) {
+	A := makeDenseMatrix()
+	B := makeDenseMatrix()
+	testMatrixAssignMatrixFunc(t, A, B)
+}
+
+func TestSparseMatrixAssignMatrixFunc(t *testing.T) {
+	A := makeSparseMatrix()
+	B := makeSparseMatrix()
+	testMatrixAssignMatrixFunc(t, A, B)
+}
+
+func testMatrixAssignMatrixFunc(t *testing.T, A, B assignMatrixFuncMatrix) {
+	Acopy := A.Copy()
+	A.AssignMatrixFunc(B, Plus)
+	for r := 0; r < A.Rows(); r++ {
+		for c := 0; c < A.Columns(); c++ {
+			expected := Acopy.GetQuick(r, c) + B.GetQuick(r, c)
+			actual := A.GetQuick(r, c)
+			if math.Abs(expected - actual) > tol {
+				t.Errorf("expected:%g actual:%g", expected, actual)
+			}
+		}
+	}
+}
+
+type assignMatrixFuncSelection interface {
+	MatrixData
+	AssignMatrixFuncSelection(y MatrixData, f Float64Float64Func, rowList, columnList []int) (*Matrix, error)
+	Copy() *Matrix
+}
+
+func TestDenseMatrixAssignMatrixFuncSelection(t *testing.T) {
+	A := makeDenseMatrix()
+	B := makeDenseMatrix()
+	testMatrixAssignMatrixFuncSelection(t, A, B)
+}
+
+func TestSparseMatrixAssignMatrixFuncSelection(t *testing.T) {
+	A := makeSparseMatrix()
+	B := makeSparseMatrix()
+	testMatrixAssignMatrixFuncSelection(t, A, B)
+}
+
+func testMatrixAssignMatrixFuncSelection(t *testing.T, A, B assignMatrixFuncSelection) {
+	var rowList []int
+	var columnList []int
+	for r := 0; r < A.Rows(); r++ {
+		for c := 0; c < A.Columns(); c++ {
+			rowList = append(rowList, r)
+			columnList = append(columnList, c)
+		}
+	}
+	Acopy := A.Copy()
+	A.AssignMatrixFuncSelection(B, Div, rowList, columnList)
+	for r := 0; r < A.Rows(); r++ {
+		for c := 0; c < A.Columns(); c++ {
+			expected := Acopy.GetQuick(r, c) / B.GetQuick(r, c)
+			actual := A.GetQuick(r, c)
+			if math.Abs(expected - actual) > tol {
+				t.Errorf("expected:%g actual:%g", expected, actual)
+			}
+		}
+	}
+}
+
+type assignProcedureMatrix interface {
+	MatrixData
+	AssignProcedure(cond Float64Procedure, value float64) *Matrix
+	Copy() *Matrix
+}
+
+func TestDenseMatrixAssignProcedure(t *testing.T) {
+	A := makeDenseMatrix()
+	testMatrixAssignProcedure(t, A)
+}
+
+func TestSparseMatrixAssignProcedure(t *testing.T) {
+	A := makeSparseMatrix()
+	testMatrixAssignProcedure(t, A)
+}
+
+func testMatrixAssignProcedure(t *testing.T, A assignProcedureMatrix) {
+	procedure := func(element float64) bool {
+		if math.Abs(element) > 0.1 {
+			return true
+		} else {
+			return false
+		}
+	}
+	Acopy := A.Copy()
+	A.AssignProcedure(procedure, -1.0)
+	for r := 0; r < A.Rows(); r++ {
+		for c := 0; c < A.Columns(); c++ {
+			var expected float64
+			if math.Abs(Acopy.GetQuick(r, c)) > 0.1 {
+				expected = -1.0
+			} else {
+				expected = Acopy.GetQuick(r, c)
+			}
+			actual := A.GetQuick(r, c)
+			if math.Abs(expected - actual) > tol {
+				t.Errorf("expected:%g actual:%g", expected, actual)
+			}
+		}
+	}
+}
+
+type assignProcedureFuncMatrix interface {
+	MatrixData
+	AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Matrix
+	Copy() *Matrix
+}
+
+func TestDenseMatrixAssignProcedureFunc(t *testing.T) {
+	A := makeDenseMatrix()
+	testMatrixAssignProcedureFunc(t, A)
+}
+
+func TestSparseMatrixAssignProcedureFunc(t *testing.T) {
+	A := makeSparseMatrix()
+	testMatrixAssignProcedureFunc(t, A)
+}
+
+func testMatrixAssignProcedureFunc(t *testing.T, A assignProcedureFuncMatrix) {
+	procedure := func(element float64) bool {
+		if math.Abs(element) > 0.1 {
+			return true
+		} else {
+			return false
+		}
+	}
+	Acopy := A.Copy()
+	A.AssignProcedureFunc(procedure, math.Tan)
+	for r := 0; r < A.Rows(); r++ {
+		for c := 0; c < A.Columns(); c++ {
+			var expected float64
+			if math.Abs(Acopy.GetQuick(r, c)) > 0.1 {
+				expected = math.Tan(Acopy.GetQuick(r, c))
+			} else {
+				expected = Acopy.GetQuick(r, c)
+			}
+			actual := A.GetQuick(r, c)
+			if math.Abs(expected - actual) > tol {
+				t.Errorf("expected:%g actual:%g", expected, actual)
+			}
+		}
+	}
+}

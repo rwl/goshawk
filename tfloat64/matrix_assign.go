@@ -25,7 +25,7 @@ func (m *Matrix) AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Matr
 	return m
 }
 
-func (m *Matrix) AssignProcedureValue(cond Float64Procedure, value float64) *Matrix {
+func (m *Matrix) AssignProcedure(cond Float64Procedure, value float64) *Matrix {
 	var elem float64
 	for r := 0; r < m.Rows(); r++ {
 		for c := 0; c < m.Columns(); c++ {
@@ -48,7 +48,7 @@ func (m *Matrix) Assign(value float64) *Matrix {
 }
 
 func (m *Matrix) AssignVector(values []float64) (*Matrix, error) {
-	if len(values) != m.Rows() * m.Columns() {
+	if len(values) != m.Size() {
 		return m, fmt.Errorf("Must have same length: length=%d rows()*columns()=%d", len(values), m.Rows() * m.Columns())
 	}
 	idx := 0
