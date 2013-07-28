@@ -878,3 +878,161 @@ func testView(t *testing.T, A viewVector) {
 		}
 	}
 }
+
+/*type viewSortedVector interface { TODO: implement sort
+	VectorData
+	ViewSorted() *Vector
+}
+
+func TestDenseViewSorted(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testViewSorted(t, A)
+}
+
+func TestSparseViewSorted(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testViewSorted(t, A)
+}
+
+func testViewSorted(t *testing.T, A viewSortedVector) {
+	b := A.ViewSorted()
+	for i := 0; i < A.Size() - 1; i++ {
+		if b.GetQuick(i + 1) < b.GetQuick(i) {
+			t.Errorf("%g < %g", b.GetQuick(i + 1), b.GetQuick(i))
+		}
+	}
+}*/
+
+type viewStridesVector interface {
+	VectorData
+	ViewStrides(int) *Vector
+}
+
+func TestDenseViewStrides(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testViewStrides(t, A)
+}
+
+func TestSparseViewStrides(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testViewStrides(t, A)
+}
+
+func testViewStrides(t *testing.T, A viewStridesVector) {
+	stride := 3
+	b := A.ViewStrides(stride)
+	for i := 0; i < b.Size(); i++ {
+		expected := A.GetQuick(i * stride)
+		result := b.GetQuick(i)
+		if math.Abs(expected - result) > tol {
+			t.Errorf("expected:%g actual:%g", expected, result)
+		}
+	}
+}
+
+type dotProductVector interface {
+	VectorData
+	ZDotProduct(VectorData) float64
+}
+
+func TestDenseZDotProduct(t *testing.T) {
+	A, B := makeDenseVectors()
+	testZDotProduct(t, A, B)
+}
+
+func TestSparseZDotProduct(t *testing.T) {
+	A, B := makeSparseVectors()
+	testZDotProduct(t, A, B)
+}
+
+func testZDotProduct(t *testing.T, A, B dotProductVector) {
+	product := A.ZDotProduct(B)
+	var expected float64 = 0
+	for i := 0; i < A.Size(); i++ {
+		expected += A.GetQuick(i) * B.GetQuick(i)
+	}
+	if math.Abs(expected - product) > tol {
+		t.Errorf("expected:%g actual:%g", expected, product)
+	}
+}
+
+type dotProductRangeVector interface {
+	VectorData
+	ZDotProductRange(VectorData, int, int) float64
+}
+
+func TestDenseZDotProductRange(t *testing.T) {
+	A, B := makeDenseVectors()
+	testZDotProductRange(t, A, B)
+}
+
+func TestSparseZDotProductRange(t *testing.T) {
+	A, B := makeSparseVectors()
+	testZDotProductRange(t, A, B)
+}
+
+func testZDotProductRange(t *testing.T, A, B dotProductRangeVector) {
+	product := A.ZDotProductRange(B, 5, B.Size() - 10)
+	var expected float64 = 0
+	for i := 5; i < A.Size() - 5; i++ {
+		expected += A.GetQuick(i) * B.GetQuick(i)
+	}
+	if math.Abs(expected - product) > tol {
+		t.Errorf("expected:%g actual:%g", expected, product)
+	}
+}
+
+type dotProductSelectionVector interface {
+	VectorData
+	ZDotProductSelection(VectorData, int, int, []int) float64
+	NonZeros(*[]int, *[]float64)
+}
+
+func TestDenseZDotProductSelection(t *testing.T) {
+	A, B := makeDenseVectors()
+	testZDotProductSelection(t, A, B)
+}
+
+func TestSparseZDotProductSelection(t *testing.T) {
+	A, B := makeSparseVectors()
+	testZDotProductSelection(t, A, B)
+}
+
+func testZDotProductSelection(t *testing.T, A, B dotProductSelectionVector) {
+	var indexList []int
+	B.NonZeros(&indexList, nil)
+	product := A.ZDotProductSelection(B, 5, B.Size() - 10, indexList)
+	var expected float64 = 0
+	for i := 5; i < A.Size() - 5; i++ {
+		expected += A.GetQuick(i) * B.GetQuick(i)
+	}
+	if math.Abs(expected - product) > tol {
+		t.Errorf("expected:%g actual:%g", expected, product)
+	}
+}
+
+type sumVector interface {
+	VectorData
+	ZSum() float64
+}
+
+func TestDenseZSum(t *testing.T) {
+	A, _ := makeDenseVectors()
+	testZSum(t, A)
+}
+
+func TestSparseZSum(t *testing.T) {
+	A, _ := makeSparseVectors()
+	testZSum(t, A)
+}
+
+func testZSum(t *testing.T, A sumVector) {
+	sum := A.ZSum()
+	var expected float64 = 0
+	for i := 0; i < A.Size(); i++ {
+		expected += A.GetQuick(i)
+	}
+	if math.Abs(expected - sum) > tol {
+		t.Errorf("expected:%g actual:%g", expected, sum)
+	}
+}

@@ -1,7 +1,10 @@
 
 package tfloat64
 
-import l4g "code.google.com/p/log4go"
+import (
+	l4g "code.google.com/p/log4go"
+	"sort"
+)
 
 var prop = &Property{1e-9}
 
@@ -376,6 +379,79 @@ func (v *Vector) FillArray(values []float64) error {
 	return nil
 }
 
+// Returns the dot product of two vectors x and y, which is
+// Sum(x[i]*y[i]). Where x == this. Operates on cells at
+// indexes 0 .. math.Min(size(), y.size()).
+func (v *Vector) ZDotProduct(y VectorData) float64 {
+	return v.ZDotProductRange(y, 0, v.Size())
+}
+
+// Returns the dot product of two vectors x and y, which is
+// Sum(x[i]*y[i]). Where x == this. Operates on cells at
+// indexes from .. Min(Size(), y.Size(),from+length)-1.
+func (v *Vector) ZDotProductRange(y VectorData, from, length int) float64 {
+	if from < 0 || length <= 0 {
+		return 0
+	}
+
+	tail := from + length
+	if v.Size() < tail {
+		tail = v.Size()
+	}
+	if y.Size() < tail {
+		tail = y.Size()
+	}
+	length = tail - from
+
+	sum := 0.0
+	i := tail - 1
+	for k := 0; k < length; i-- {
+		sum += v.GetQuick(i) * y.GetQuick(i)
+		k++
+	}
+	return sum
+}
+
+// Returns the dot product of two vectors x and y, which is
+// Sum(x[i]*y[i]). Where x == this.
+func (v *Vector) ZDotProductSelection(y VectorData, from, length int, nonZeroIndexes []int) float64 {
+	// determine minimum length
+	if from < 0 || length <= 0 {
+		return 0
+	}
+
+	tail := from + length
+	if v.Size() < tail {
+		tail = v.Size()
+	}
+	if y.Size() < tail {
+		tail = y.Size()
+	}
+	length = tail - from
+	if length <= 0 {
+		return 0
+	}
+	indexesCopy := make([]int, len(nonZeroIndexes))
+	copy(indexesCopy, nonZeroIndexes)
+	sort.Ints(indexesCopy)
+	index := 0
+	s := len(indexesCopy)
+	// skip to start
+	for (index < s) && nonZeroIndexes[index] < from {
+		index++
+	}
+	// now the sparse dot product
+	i := nonZeroIndexes[index]
+	sum := 0.0
+	length--
+	for length >= 0 && index < s && i < tail {
+		sum += v.GetQuick(i) * y.GetQuick(i)
+		index++
+		i = nonZeroIndexes[index]
+		length--
+	}
+	return sum
+}
 
 // Returns the sum of all cells; Sum( x[i] ).
 func (v *Vector) ZSum() float64 {

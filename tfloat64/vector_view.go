@@ -98,3 +98,20 @@ func (v *Vector) ViewProcedure(condition Float64Procedure) *Vector {
 	view, _ := v.View(matches)
 	return view
 }
+
+// Sorts the vector into ascending order, according to the natural
+// ordering. This sort is guaranteed to be stable.
+func (v *Vector) ViewSorted() *Vector {
+	l4g.Crashf("sort not implemented")
+	return v//mergeSort.sortVector(v) TODO: implement sort
+}
+
+// Constructs and returns a new stride view which is a sub matrix
+// consisting of every i-th cell. More specifically, the view has size
+// this.size()/stride holding cells this.get(i*stride) for
+// all i = 0..size()/stride - 1.
+func (v *Vector) ViewStrides(stride int) *Vector {
+	view := v.ViewVector()
+	view.VectorStrides(stride)
+	return view
+}
