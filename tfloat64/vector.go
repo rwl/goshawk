@@ -6,7 +6,10 @@ import (
 	"sort"
 )
 
-var prop = &Property{1e-9}
+var (
+	prop = &Property{1e-9}
+	fmtr = NewFormatter()
+)
 
 type Vector struct {
 	VectorData
@@ -14,23 +17,20 @@ type Vector struct {
 
 func (v *Vector) checkSize(other VectorData) error {
 	if v.Size() != other.Size() {
-//		formatter := NewFormatter()
-//		return l4g.Error("Incompatible sizes: %s and %s",
-//			formatter.VectorShape(v), formatter.VectorShape(other))
-		return fmt.Errorf("Incompatible sizes: %d and %d",
-			v.Size(), other.Size())
+		return fmt.Errorf("Incompatible sizes: %s and %s",
+			fmtr.VectorShape(v), fmtr.VectorShape(other))
 	}
 	return nil
 }
 
 // Returns a string representation using default formatting.
 func (v *Vector) String() string {
-	return ""//NewFormatter().VectorToString(v)
+	return fmtr.VectorToString(v)
 }
 
 // Returns a short string representation of the receiver's shape.
 func (v *Vector) StringShort() string {
-	return ""//NewFormatter().VectorShape(v)
+	return fmtr.VectorShape(v)
 }
 
 // Returns the matrix cell value at coordinate "index".
@@ -245,7 +245,8 @@ func (v *Vector) NonZeros(indexList *[]int, valueList *[]float64) {
 // cells having non-zero values into the specified lists. Fills into the
 // lists, starting at index 0. After this call returns the specified lists
 // all have a new size, the number of non-zero values.
-func (v *Vector) NonZerosCardinality(indexList *[]int, valueList *[]float64, maxCardinality int) {
+func (v *Vector) NonZerosCardinality(indexList *[]int, valueList *[]float64,
+		maxCardinality int) {
 	fillIndexList := indexList != nil
 	fillValueList := valueList != nil
 	if fillIndexList {
@@ -414,7 +415,8 @@ func (v *Vector) ZDotProductRange(y VectorData, from, length int) float64 {
 
 // Returns the dot product of two vectors x and y, which is
 // Sum(x[i]*y[i]). Where x == this.
-func (v *Vector) ZDotProductSelection(y VectorData, from, length int, nonZeroIndexes []int) float64 {
+func (v *Vector) ZDotProductSelection(y VectorData, from, length int,
+		nonZeroIndexes []int) float64 {
 	// determine minimum length
 	if from < 0 || length <= 0 {
 		return 0
