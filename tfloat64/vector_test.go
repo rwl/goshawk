@@ -12,26 +12,20 @@ const (
 	tol = 1e-10
 )
 
-func makeDenseVectors() (*Vector, *Vector) {
+func makeDenseVector() (*Vector) {
 	A := NewVector(test_size)
-	B := NewVector(test_size)
-
 	for i := 0; i < test_size; i++ {
 		A.SetQuick(i, rand.Float64())
-		B.SetQuick(i, rand.Float64())
 	}
-	return A, B
+	return A
 }
 
-func makeSparseVectors() (*Vector, *Vector) {
+func makeSparseVector() (*Vector) {
 	A := NewSparseVector(test_size)
-	B := NewSparseVector(test_size)
-
 	for i := 0; i < test_size; i++ {
 		A.SetQuick(i, rand.Float64())
-		B.SetQuick(i, rand.Float64())
 	}
-	return A, B
+	return A
 }
 
 type aggregateVector interface {
@@ -40,12 +34,12 @@ type aggregateVector interface {
 }
 
 func TestDenseAggregate(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAggregate(t, A)
 }
 
 func TestSparseAggregate(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAggregate(t, A)
 }
 
@@ -68,12 +62,12 @@ type aggregateIndexedVector interface {
 }
 
 func TestDenseAggregateIndexed(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAggregateIndexed(t, A)
 }
 
 func TestSparseAggregateIndexed(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAggregateIndexed(t, A)
 }
 
@@ -99,12 +93,14 @@ type aggregatorVectorVector interface {
 }
 
 func TestDenseAggregateVector(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testAggregateVector(t, A, B)
 }
 
 func TestSparseAggregateVector(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testAggregateVector(t, A, B)
 }
 
@@ -130,12 +126,12 @@ type assignVector interface {
 }
 
 func TestDenseAssign(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAssign(t, A)
 }
 
 func TestSparseAssign(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAssign(t, A)
 }
 
@@ -156,12 +152,12 @@ type assignArrayVector interface {
 }
 
 func TestDenseAssignArray(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAssignArray(t, A)
 }
 
 func TestSparseAssignArray(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAssignArray(t, A)
 }
 
@@ -186,12 +182,12 @@ type assignFuncVector interface {
 }
 
 func TestDenseAssignFunc(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAssignFunc(t, A)
 }
 
 func TestSparseAssignFunc(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAssignFunc(t, A)
 }
 
@@ -213,12 +209,14 @@ type assignVectorVector interface {
 }
 
 func TestDenseAssignVector(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testAssignVector(t, A, B)
 }
 
 func TestSparseAssignVector(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testAssignVector(t, A, B)
 }
 
@@ -243,12 +241,14 @@ type assignVectorFuncVector interface {
 }
 
 func TestDenseAssignVectorFunc(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testAssignVectorFunc(t, A, B)
 }
 
 func TestSparseAssignVectorFunc(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testAssignVectorFunc(t, A, B)
 }
 
@@ -271,12 +271,12 @@ type assignProcedureVector interface {
 }
 
 func TestDenseAssignProcedure(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAssignProcedure(t, A)
 }
 
 func TestSparseAssignProcedure(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAssignProcedure(t, A)
 }
 
@@ -312,12 +312,12 @@ type assignProcedureFuncVector interface {
 }
 
 func TestDenseAssignProcedureFunc(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testAssignProcedureFunc(t, A)
 }
 
 func TestSparseAssignProcedureFunc(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testAssignProcedureFunc(t, A)
 }
 
@@ -352,12 +352,12 @@ type cardinalityVector interface {
 }
 
 func TestDenseCardinality(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testCardinality(t, A)
 }
 
 func TestSparseCardinality(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testCardinality(t, A)
 }
 
@@ -374,12 +374,12 @@ type equalsVector interface {
 }
 
 func TestDenseEquals(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testEquals(t, A)
 }
 
 func TestSparseEquals(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testEquals(t, A)
 }
 
@@ -400,12 +400,14 @@ type equalsVectorVector interface {
 }
 
 func TestDenseEqualsVector(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testEqualsVector(t, A, B)
 }
 
 func TestSparseEqualsVector(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testEqualsVector(t, A, B)
 }
 
@@ -425,12 +427,12 @@ type maxLocationVector interface {
 }
 
 func TestDenseMaxLocation(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testMaxLocation(t, A)
 }
 
 func TestSparseMaxLocation(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testMaxLocation(t, A)
 }
 
@@ -455,12 +457,12 @@ type minLocationVector interface {
 }
 
 func TestDenseMinLocation(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testMinLocation(t, A)
 }
 
 func TestSparseMinLocation(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testMinLocation(t, A)
 }
 
@@ -485,12 +487,12 @@ type negativeValuesVector interface {
 }
 
 func TestDenseNegativeValues(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testGetNegativeValues(t, A)
 }
 
 func TestSparseNegativeValues(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testGetNegativeValues(t, A)
 }
 
@@ -528,12 +530,12 @@ type nonZerosVector interface {
 }
 
 func TestDenseNonZeros(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testNonZeros(t, A)
 }
 
 func TestSparseNonZeros(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testNonZeros(t, A)
 }
 
@@ -571,12 +573,12 @@ type positiveValuesVector interface {
 }
 
 func TestDensePositiveValues(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testPositiveValues(t, A)
 }
 
 func TestSparsePositiveValues(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testPositiveValues(t, A)
 }
 
@@ -613,12 +615,12 @@ type toArrayVector interface {
 }
 
 func TestDenseToArray(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testToArray(t, A)
 }
 
 func TestSparseToArray(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testToArray(t, A)
 }
 
@@ -642,12 +644,12 @@ type fillArrayVector interface {
 }
 
 func TestDenseFillArray(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testFillArray(t, A)
 }
 
 func TestSparseFillArray(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testFillArray(t, A)
 }
 
@@ -671,12 +673,12 @@ type reshapeMatrixVector interface {
 }
 
 func TestDenseReshapeMatrix(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testReshapeMatrix(t, A)
 }
 
 func TestSparseReshapeMatrix(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testReshapeMatrix(t, A)
 }
 
@@ -704,12 +706,12 @@ type reshapeCubeVector interface {
 }
 
 func TestDenseReshapeCube(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testReshapeCube(t, A)
 }
 
 func TestSparseReshapeCube(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testReshapeCube(t, A)
 }
 
@@ -742,12 +744,14 @@ type swapVector interface {
 }
 
 func TestDenseSwap(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testSwap(t, A, B)
 }
 
 func TestSparseSwap(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testSwap(t, A, B)
 }
 
@@ -776,12 +780,12 @@ type viewFlipVector interface {
 }
 
 func TestDenseViewFlip(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testViewFlip(t, A)
 }
 
 func TestSparseViewFlip(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testViewFlip(t, A)
 }
 
@@ -805,12 +809,12 @@ type viewPartVector interface {
 }
 
 func TestDenseViewPart(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testViewPart(t, A)
 }
 
 func TestSparseViewPart(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testViewPart(t, A)
 }
 
@@ -831,12 +835,12 @@ type viewProcedureVector interface {
 }
 
 func TestDenseViewProcedure(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testViewProcedure(t, A)
 }
 
 func TestSparseViewProcedure(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testViewProcedure(t, A)
 }
 
@@ -858,12 +862,12 @@ type viewVector interface {
 }
 
 func TestDenseView(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testView(t, A)
 }
 
 func TestSparseView(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testView(t, A)
 }
 
@@ -885,12 +889,12 @@ func testView(t *testing.T, A viewVector) {
 }
 
 func TestDenseViewSorted(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testViewSorted(t, A)
 }
 
 func TestSparseViewSorted(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testViewSorted(t, A)
 }
 
@@ -909,12 +913,12 @@ type viewStridesVector interface {
 }
 
 func TestDenseViewStrides(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testViewStrides(t, A)
 }
 
 func TestSparseViewStrides(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testViewStrides(t, A)
 }
 
@@ -936,12 +940,14 @@ type dotProductVector interface {
 }
 
 func TestDenseZDotProduct(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testZDotProduct(t, A, B)
 }
 
 func TestSparseZDotProduct(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testZDotProduct(t, A, B)
 }
 
@@ -962,12 +968,14 @@ type dotProductRangeVector interface {
 }
 
 func TestDenseZDotProductRange(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testZDotProductRange(t, A, B)
 }
 
 func TestSparseZDotProductRange(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testZDotProductRange(t, A, B)
 }
 
@@ -989,12 +997,14 @@ type dotProductSelectionVector interface {
 }
 
 func TestDenseZDotProductSelection(t *testing.T) {
-	A, B := makeDenseVectors()
+	A := makeDenseVector()
+	B := makeDenseVector()
 	testZDotProductSelection(t, A, B)
 }
 
 func TestSparseZDotProductSelection(t *testing.T) {
-	A, B := makeSparseVectors()
+	A := makeSparseVector()
+	B := makeSparseVector()
 	testZDotProductSelection(t, A, B)
 }
 
@@ -1017,12 +1027,12 @@ type sumVector interface {
 }
 
 func TestDenseZSum(t *testing.T) {
-	A, _ := makeDenseVectors()
+	A := makeDenseVector()
 	testZSum(t, A)
 }
 
 func TestSparseZSum(t *testing.T) {
-	A, _ := makeSparseVectors()
+	A := makeSparseVector()
 	testZSum(t, A)
 }
 
