@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import "math"
@@ -53,7 +52,7 @@ func (m *Matrix) AggregateProcedureSelection(aggr Float64Float64Func, f Float64F
 	return a
 }
 
-func (m *Matrix) AggregateMatrix(other MatrixData, aggr Float64Float64Func, f Float64Float64Func) (float64, error) {
+func (m *Matrix) AggregateMatrix(other Mat, aggr Float64Float64Func, f Float64Float64Func) (float64, error) {
 	err := m.checkShape(other)
 	if err != nil {
 		return math.NaN(), err

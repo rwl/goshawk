@@ -4,7 +4,7 @@ func (v *Vector) Square() *Vector {
 	return v.AssignFunc(Square)
 }
 
-func (v *Vector) Mult(y VectorData) (*Vector, error) {
+func (v *Vector) Mult(y Vec) (*Vector, error) {
 	return v.AssignVectorFunc(y, Mult)
 }
 
@@ -20,82 +20,82 @@ func (v *Vector) Sign() *Vector {
 	return v.AssignFunc(Sign)
 }
 
-func (v *Vector) Compare(y VectorData) *Vector {
+func (v *Vector) Compare(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Compare)
 	return x
 }
 
-func (v *Vector) Div(y VectorData) *Vector {
+func (v *Vector) Div(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Div)
 	return x
 }
 
-func (v *Vector) DivNeg(y VectorData) *Vector {
+func (v *Vector) DivNeg(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, DivNeg)
 	return x
 }
 
-/*func (v *Vector) Equals(y VectorData) *Vector {
+/*func (v *Vector) Equals(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Equals)
 	return x
 }*/
 
-func (v *Vector) Greater(y VectorData) *Vector {
+func (v *Vector) Greater(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Greater)
 	return x
 }
 
-/*func (v *Vector) IsEqual(y VectorData) *Vector {
+/*func (v *Vector) IsEqual(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, IsEqual)
 	return x
 }
 
-func (v *Vector) IsLess(y VectorData) *Vector {
+func (v *Vector) IsLess(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, IsLess)
 	return x
 }
 
-func (v *Vector) IsGreater(y VectorData) *Vector {
+func (v *Vector) IsGreater(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, IsGreater)
 	return x
 }*/
 
-func (v *Vector) Less(y VectorData) *Vector {
+func (v *Vector) Less(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Less)
 	return x
 }
 
-func (v *Vector) Lg(y VectorData) *Vector {
+func (v *Vector) Lg(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Lg)
 	return x
 }
 
-func (v *Vector) Minus(y VectorData) *Vector {
+func (v *Vector) Minus(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Minus)
 	return x
 }
 
-func (v *Vector) MultNeg(y VectorData) *Vector {
+func (v *Vector) MultNeg(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, MultNeg)
 	return x
 }
 
-func (v *Vector) MultSquare(y VectorData) *Vector {
+func (v *Vector) MultSquare(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, MultSquare)
 	return x
 }
 
-func (v *Vector) Plus(y VectorData) *Vector {
+func (v *Vector) Plus(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Plus)
 	return x
 }
 
-func (v *Vector) PlusAbs(y VectorData) *Vector {
+func (v *Vector) PlusAbs(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, PlusAbs)
 	return x
 }
 
-/*func (v *Vector) Between(y VectorData) *Vector {
+/*func (v *Vector) Between(y Vec) *Vector {
 	x, _ := v.AssignVectorFunc(y, Between)
 	return x
 }*/
@@ -176,22 +176,22 @@ func (v *Vector) IsLessThan(y, value float64) *Vector {
 	return v.AssignProcedure(IsLessThan(y), value)
 }
 
-func (v *Vector) MinusMult(other VectorData, y float64) *Vector {
+func (v *Vector) MinusMult(other Vec, y float64) *Vector {
 	x, _ := v.AssignVectorFunc(other, MinusMult(y))
 	return x
 }
 
-func (v *Vector) MultSecond(other VectorData, y float64) *Vector {
+func (v *Vector) MultSecond(other Vec, y float64) *Vector {
 	x, _ := v.AssignVectorFunc(other, MultSecond(y))
 	return x
 }
 
-func (v *Vector) PlusMultSecond(other VectorData, y float64) *Vector {
+func (v *Vector) PlusMultSecond(other Vec, y float64) *Vector {
 	x, _ := v.AssignVectorFunc(other, PlusMultSecond(y))
 	return x
 }
 
-func (v *Vector) PlusMultFirst(other VectorData, y float64) *Vector {
+func (v *Vector) PlusMultFirst(other Vec, y float64) *Vector {
 	x, _ := v.AssignVectorFunc(other, PlusMultFirst(y))
 	return x
 }

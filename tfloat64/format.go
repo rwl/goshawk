@@ -2,7 +2,7 @@ package tfloat64
 
 import (
 	"fmt"
-	"bitbucket.org/rwl/colt"
+	common "github.com/rwl/goshawk"
 )
 
 // Flexible, well human readable matrix print formatting; By default decimal
@@ -11,7 +11,7 @@ import (
 // matrix.String() and be happy with the default formatting. This type is for
 // advanced requirements.
 type Formatter struct {
-	colt.FormatterBase
+	common.FormatterBase
 }
 
 // Constructs and returns a matrix formatter with format "%G".
@@ -23,15 +23,15 @@ func NewFormatter() *Formatter {
 // convert a single cell value.
 func NewFormatterFormat(format string) *Formatter {
 	return &Formatter{
-		colt.FormatterBase{
+		common.FormatterBase{
 			Format: format,
-			Alignment: colt.DECIMAL,
+			Alignment: common.DECIMAL,
 		},
 	}
 }
 
 // Converts a given cell to a String; no alignment considered.
-func (f *Formatter) Form(vector VectorData, index int) string {
+func (f *Formatter) Form(vector Vec, index int) string {
 	if index < 0 || index >= vector.Size() {
 		return "index error"
 	}
@@ -39,8 +39,8 @@ func (f *Formatter) Form(vector VectorData, index int) string {
 }
 
 //  Returns a string representations of all cells; no alignment considered.
-func (f *Formatter) FormatMatrix(matrix MatrixData) [][]string {
-	strings := make([][]string, matrix.Rows(), matrix.Columns())
+func (f *Formatter) FormatMatrix(matrix Mat) [][]string {
+	strings := make([][]string,matrix.Rows(), matrix.Columns())
 	/*for row := 0; row < matrix.Rows(); row++ { TODO: implement ViewRow
 		strings[row] = f.FormatRow(matrix.ViewRow(row))
 	}*/
@@ -48,7 +48,7 @@ func (f *Formatter) FormatMatrix(matrix MatrixData) [][]string {
 }
 
 //  Returns a string representations of all cells; no alignment considered.
-func (f *Formatter) FormatRow(vector VectorData) []string {
+func (f *Formatter) FormatRow(vector Vec) []string {
 	s := vector.Size()
 	strings := make([]string, s)
 	for i := 0; i < s; i++ {
@@ -58,7 +58,7 @@ func (f *Formatter) FormatRow(vector VectorData) []string {
 }
 
 // Returns a short string representation describing the shape of the vector.
-func (f *Formatter) VectorShape(vector VectorData) string {
+func (f *Formatter) VectorShape(vector Vec) string {
 	// return "Matrix1D of size="+matrix.Size
 	// return matrix.Size+" element matrix"
 	// return "matrix("+matrix.Size+")"
@@ -66,24 +66,24 @@ func (f *Formatter) VectorShape(vector VectorData) string {
 }
 
 // Returns a short string representation describing the shape of the matrix.
-func (f *Formatter) MatrixShape(matrix MatrixData) string {
+func (f *Formatter) MatrixShape(matrix Mat) string {
 	return fmt.Sprintf("%d x %d matrix", matrix.Rows(), matrix.Columns())
 }
 
 // Returns a short string representation describing the shape of the cube.
-func (f *Formatter) CubeShape(matrix CubeData) string {
+func (f *Formatter) CubeShape(matrix Cub) string {
 	return fmt.Sprintf("%d x %d x %d matrix", matrix.Slices(), matrix.Rows(), matrix.Columns())
 }
 
 // Returns a string representation of the given vector.
-func (f *Formatter) VectorToString(v VectorData) string {
-//	easy := NewMatrix(1, v.Size())
-//	easy.ViewRow(0).AssignVector(v)
+func (f *Formatter) VectorToString(v Vec) string {
+	//	easy := NewMatrix(1, v.Size())
+	//	easy.ViewRow(0).AssignVector(v)
 	return ""//f.MatrixToString(easy)
 }
 
 // Returns a string representation of the given matrix.
-func (f *Formatter) MatrixToString(matrix MatrixData) string {
+func (f *Formatter) MatrixToString(matrix Mat) string {
 	strings := f.FormatMatrix(matrix)
 	f.Align(strings)
 	total := f.ArrayToString(strings)
@@ -92,6 +92,7 @@ func (f *Formatter) MatrixToString(matrix MatrixData) string {
 	}
 	return total
 }
+
 /*
 // Returns a string representation of the given matrix.
 func (f *Formatter) CubeToString(matrix *Cube) string {

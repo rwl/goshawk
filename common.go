@@ -1,17 +1,16 @@
+package goshawk
 
-package colt
-
-// Interface for all colt backends.
-type BaseData interface {
+// Interface for all backends.
+type Base interface {
 	IsView() bool
 	Elements() interface{}
 }
 
-type CoreData struct {
+type Core struct {
 	isView bool // Whether the receiver is a view or not.
 }
 
 // Returns whether the receiver is a view or not.
-func (v *CoreData) IsView() bool {
+func (v *Core) IsView() bool {
 	return v.isView
 }

@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -7,7 +6,7 @@ import (
 )
 
 type aggregateVector interface {
-VectorData
+Vec
 	Aggregate(Float64Float64Func, Float64Func) float64
 }
 
@@ -25,7 +24,7 @@ func testAggregate(t *testing.T, A aggregateVector) {
 	expected := 0.0
 	for i := 0; i < A.Size(); i++ {
 		elem := A.GetQuick(i)
-		expected += elem * elem
+		expected += elem*elem
 	}
 
 	result := A.Aggregate(Plus, Square)
@@ -35,7 +34,7 @@ func testAggregate(t *testing.T, A aggregateVector) {
 }
 
 type aggregateIndexedVector interface {
-VectorData
+Vec
 	AggregateIndexed(Float64Float64Func, Float64Func, []int) float64
 }
 
@@ -57,7 +56,7 @@ func testAggregateIndexed(t *testing.T, A aggregateIndexedVector) {
 	expected := 0.0
 	for i := 0; i < A.Size(); i++ {
 		elem := A.GetQuick(i)
-		expected += elem * elem
+		expected += elem*elem
 	}
 	result := A.AggregateIndexed(Plus, Square, indexList)
 	if math.Abs(expected - result) > tol {
@@ -66,8 +65,8 @@ func testAggregateIndexed(t *testing.T, A aggregateIndexedVector) {
 }
 
 type aggregatorVectorVector interface {
-VectorData
-	AggregateVector(VectorData, Float64Float64Func, Float64Float64Func) (float64, error)
+Vec
+	AggregateVector(Vec, Float64Float64Func, Float64Float64Func) (float64, error)
 }
 
 func TestDenseAggregateVector(t *testing.T) {
@@ -82,12 +81,12 @@ func TestSparseAggregateVector(t *testing.T) {
 	testAggregateVector(t, A, B)
 }
 
-func testAggregateVector(t *testing.T, A aggregatorVectorVector, B VectorData) {
+func testAggregateVector(t *testing.T, A aggregatorVectorVector, B Vec) {
 	expected := 0.0
 	for i := 0; i < A.Size(); i++ {
 		elemA := A.GetQuick(i)
 		elemB := B.GetQuick(i)
-		expected += elemA * elemB
+		expected += elemA*elemB
 	}
 	result, err := A.AggregateVector(B, Plus, Mult)
 	if err != nil {

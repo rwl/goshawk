@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -42,12 +41,12 @@ func (v *Vector) AssignArray(values []float64) (*Vector, error) {
 // the same cells (as is the case if they are views derived from the same
 // matrix) and intersect in an ambiguous way, then replaces as if
 // using an intermediate auxiliary deep copy of "other".
-func (v *Vector) AssignVector(other VectorData) (*Vector, error) {
+func (v *Vector) AssignVector(other Vec) (*Vector, error) {
 	if v.Size() != other.Size() {
 		return v, fmt.Errorf("Incompatible sizes: %d and %d",
 			v.Size(), other.Size())
-//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
-//			v.StringShort(), NewFormatter().VectorShape(other))
+		//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
+		//			v.StringShort(), NewFormatter().VectorShape(other))
 	}
 	for i := 0; i < v.Size(); i++ {
 		v.SetQuick(i, other.GetQuick(i))
@@ -58,12 +57,12 @@ func (v *Vector) AssignVector(other VectorData) (*Vector, error) {
 // Assigns to each cell the result of a function taking as first argument
 // the current cell's value of this matrix, and as second argument the
 // current cell's value of "y".
-func (v *Vector) AssignVectorFunc(y VectorData, f Float64Float64Func) (*Vector, error) {
+func (v *Vector) AssignVectorFunc(y Vec, f Float64Float64Func) (*Vector, error) {
 	if y.Size() != v.Size() {
 		return v, fmt.Errorf("Incompatible sizes: %d and %d",
-				y.Size(), v.Size())
-//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
-//			v.StringShort(), NewFormatter().VectorShape(y))
+			y.Size(), v.Size())
+		//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
+		//			v.StringShort(), NewFormatter().VectorShape(y))
 	}
 	// the general case x[i] = f(x[i],y[i])
 	for i := 0; i < v.Size(); i++ {

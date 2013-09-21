@@ -1,5 +1,4 @@
-
-package tfloat64
+package goshawk
 
 import "math"
 

@@ -1,4 +1,4 @@
-package colt
+package goshawk
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ const (
 	DEFAULT_SLICE_SEPARATOR  = "\n\n"    // The default string separating any two slices from another; currently "\n\n".
 )
 
-const maxInt = int(^uint(0) >> 1)
+const maxInt = int(^uint(0)>>1)
 const minInt = -(maxInt - 1)
 
 func max(a, b int) int {
@@ -165,7 +165,7 @@ func (f *FormatterBase) AlignRow(row []string, maxColWidth, maxColLead []int) {
 			s.WriteString(c)
 			s.WriteString(f.Blanks(maxColWidth[column] - s.Len()))
 		} else if f.Alignment == CENTER {
-			s.WriteString(f.Blanks((maxColWidth[column] - len(c)) / 2))
+			s.WriteString(f.Blanks((maxColWidth[column] - len(c))/2))
 			s.WriteString(c)
 			s.WriteString(f.Blanks(maxColWidth[column] - s.Len()))
 		} else if f.Alignment == LEFT {

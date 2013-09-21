@@ -1,11 +1,10 @@
-
 package tfloat64
 
-import "bitbucket.org/rwl/colt"
+import common "github.com/rwl/goshawk"
 
 // Interface for all vector backends.
-type VectorData interface {
-	colt.BaseVectorData
+type Vec interface {
+	common.Vec
 
 	// Returns the matrix cell value at coordinate "index".
 	//
@@ -25,29 +24,15 @@ type VectorData interface {
 	// Precondition (unchecked): index < 0 || index >= Size().
 	SetQuick(int, float64)
 
-	//	Like() VectorData
-	Like(int) VectorData
-	LikeMatrix(int, int) MatrixData
+	//Like() Vec
+	Like(int) Vec
+	LikeMatrix(int, int) Mat
+
 	ReshapeMatrix(int, int) (*Matrix, error)
 	ReshapeCube(int, int, int) (*Cube, error)
+
 	// Construct and returns a new selection view using the offsets of
 	// the visible elements.
-	ViewSelectionLike(offsets []int) VectorData
-	ViewVectorData() VectorData
-}
-
-type MatrixData interface {
-	colt.BaseMatrixData
-
-	GetQuick(int, int) float64
-	SetQuick(int, int, float64)
-
-	Like(int, int) MatrixData
-}
-
-type CubeData interface {
-	colt.BaseCubeData
-
-	GetQuick(int, int, int) float64
-	SetQuick(int, int, int, float64)
+	ViewSelectionLike(offsets []int) Vec
+	ViewVec() Vec
 }

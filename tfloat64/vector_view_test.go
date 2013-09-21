@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -7,7 +6,7 @@ import (
 )
 
 type viewFlipVector interface {
-	VectorData
+Vec
 	ViewFlip() *Vector
 }
 
@@ -36,7 +35,7 @@ func testViewFlip(t *testing.T, A viewFlipVector) {
 }
 
 type viewPartVector interface {
-	VectorData
+Vec
 	ViewPart(int, int) *Vector
 }
 
@@ -62,7 +61,7 @@ func testViewPart(t *testing.T, A viewPartVector) {
 }
 
 type viewProcedureVector interface {
-	VectorData
+Vec
 	ViewProcedure(Float64Procedure) *Vector
 }
 
@@ -89,7 +88,7 @@ func testViewProcedure(t *testing.T, A viewProcedureVector) {
 }
 
 type viewVector interface {
-VectorData
+Vec
 	View([]int) (*Vector, error)
 }
 
@@ -116,7 +115,7 @@ func testView(t *testing.T, A viewVector) {
 }
 
 /*type viewSortedVector interface { TODO: implement sort
-	VectorData
+	Vec
 	ViewSorted() *Vector
 }
 
@@ -140,7 +139,7 @@ func testViewSorted(t *testing.T, A viewSortedVector) {
 }*/
 
 type viewStridesVector interface {
-VectorData
+Vec
 	ViewStrides(int) *Vector
 }
 
@@ -158,7 +157,7 @@ func testViewStrides(t *testing.T, A viewStridesVector) {
 	stride := 3
 	b := A.ViewStrides(stride)
 	for i := 0; i < b.Size(); i++ {
-		expected := A.GetQuick(i * stride)
+		expected := A.GetQuick(i*stride)
 		result := b.GetQuick(i)
 		if math.Abs(expected - result) > tol {
 			t.Errorf("expected:%g actual:%g", expected, result)

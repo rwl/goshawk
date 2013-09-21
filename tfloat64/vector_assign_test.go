@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -8,7 +7,7 @@ import (
 )
 
 type assignVector interface {
-VectorData
+Vec
 	Assign(float64) *Vector
 }
 
@@ -34,7 +33,7 @@ func testAssign(t *testing.T, A assignVector) {
 }
 
 type assignArrayVector interface {
-VectorData
+Vec
 	AssignArray([]float64) (*Vector, error)
 }
 
@@ -63,7 +62,7 @@ func testAssignArray(t *testing.T, A assignArrayVector) {
 }
 
 type assignFuncVector interface {
-VectorData
+Vec
 	AssignFunc(Float64Func) *Vector
 	Copy() *Vector
 }
@@ -91,8 +90,8 @@ func testAssignFunc(t *testing.T, A assignFuncVector) {
 }
 
 type assignVectorVector interface {
-VectorData
-	AssignVector(VectorData) (*Vector, error)
+Vec
+	AssignVector(Vec) (*Vector, error)
 }
 
 func TestDenseAssignVector(t *testing.T) {
@@ -107,7 +106,7 @@ func TestSparseAssignVector(t *testing.T) {
 	testAssignVector(t, A, B)
 }
 
-func testAssignVector(t *testing.T, A assignVectorVector, B VectorData) {
+func testAssignVector(t *testing.T, A assignVectorVector, B Vec) {
 	A.AssignVector(B)
 	if A.Size() != B.Size() {
 		t.Errorf("sizes must be equal: %d!=%d", A.Size(), B.Size())
@@ -122,8 +121,8 @@ func testAssignVector(t *testing.T, A assignVectorVector, B VectorData) {
 }
 
 type assignVectorFuncVector interface {
-VectorData
-	AssignVectorFunc(VectorData, Float64Float64Func) (*Vector, error)
+Vec
+	AssignVectorFunc(Vec, Float64Float64Func) (*Vector, error)
 	Copy() *Vector
 }
 
@@ -143,7 +142,7 @@ func testAssignVectorFunc(t *testing.T, A assignVectorFuncVector, B *Vector) {
 	Acopy := A.Copy()
 	A.AssignVectorFunc(B, Div)
 	for i := 0; i < A.Size(); i++ {
-		expected := Acopy.GetQuick(i) / B.GetQuick(i)
+		expected := Acopy.GetQuick(i)/B.GetQuick(i)
 		result := A.GetQuick(i)
 		if math.Abs(expected - result) > tol {
 			t.Errorf("expected:%g actual:%g", expected, result)
@@ -152,7 +151,7 @@ func testAssignVectorFunc(t *testing.T, A assignVectorFuncVector, B *Vector) {
 }
 
 type assignProcedureVector interface {
-VectorData
+Vec
 	AssignProcedure(Float64Procedure, float64) *Vector
 	Copy() *Vector
 }
@@ -193,7 +192,7 @@ func testAssignProcedure(t *testing.T, A assignProcedureVector) {
 }
 
 type assignProcedureFuncVector interface {
-VectorData
+Vec
 	AssignProcedureFunc(Float64Procedure, Float64Func) *Vector
 	Copy() *Vector
 }

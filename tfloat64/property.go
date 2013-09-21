@@ -10,7 +10,7 @@ type Property struct {
 // given value. The result is true if and only if
 // A != nil and !(math.Abs(value - A[i]) > tolerance)
 // holds for all coordinates.
-func (p *Property) VectorEqualsValue(v VectorData, value float64) bool {
+func (p *Property) VectorEqualsValue(v Vec, value float64) bool {
 	for i := 0; i < v.Size(); i++ {
 		x := v.GetQuick(i)
 		diff := math.Abs(value - x)
@@ -29,7 +29,7 @@ func (p *Property) VectorEqualsValue(v VectorData, value float64) bool {
 // true if and only if both arguments are != nil, have
 // the same size and !(math.Abs(A[i] - B[i]) > tolerance) holds
 // for all indexes.
-func (p *Property) VectorEqualsVector(A VectorData, B VectorData) bool {
+func (p *Property) VectorEqualsVector(A Vec, B Vec) bool {
 	if A == B {
 		return true
 	}
@@ -60,7 +60,7 @@ func (p *Property) VectorEqualsVector(A VectorData, B VectorData) bool {
 // A != nil and
 // ! (math.Abs(value - A[row, col]) > tolerance) holds for all
 // coordinates.
-func (p *Property) MatrixEqualsValue(A MatrixData, value float64) bool {
+func (p *Property) MatrixEqualsValue(A Mat, value float64) bool {
 	if A == nil {
 		return false
 	}
@@ -85,7 +85,7 @@ func (p *Property) MatrixEqualsValue(A MatrixData, value float64) bool {
 // the same number of columns and rows and
 // ! (math.Abs(A[row,col] - B[row,col]) > tolerance) holds for
 // all coordinates.
-func (p *Property) MatrixEqualsMatrix(A, B MatrixData) bool {
+func (p *Property) MatrixEqualsMatrix(A, B Mat) bool {
 	if A == B {
 		return true
 	}

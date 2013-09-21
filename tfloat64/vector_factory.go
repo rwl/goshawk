@@ -2,7 +2,7 @@ package tfloat64
 
 //C = A||B; Constructs a new matrix which is the concatenation of two other
 // matrices. Example: 0 1 append 3 4 --> 0 1 3 4.
-func AppendVectors(A, B VectorData) *Vector {
+func AppendVectors(A, B Vec) *Vector {
 	v := NewVector(A.Size() + B.Size())
 	v.ViewPart(0, A.Size()).AssignVector(A)
 	v.ViewPart(A.Size(), B.Size()).AssignVector(B)
@@ -35,7 +35,7 @@ func Decending(size int) *Vector {
 
 // Constructs a matrix which is the concatenation of all given parts. Cells
 // are copied.
-func NewVectorParts(parts []VectorData) *Vector {
+func NewVectorParts(parts []Vec) *Vector {
 	if len(parts) == 0 {
 		return NewVector(0)
 	}
@@ -74,7 +74,7 @@ func NewRandomVector(size int) *Vector {
 // 	 0 1
 // 	 repeat(3) -->
 // 	 0 1 0 1 0 1
-func RepeatVector(A VectorData, repeat int) *Vector {
+func RepeatVector(A Vec, repeat int) *Vector {
 	size := A.Size()
 	v := NewVector(repeat*size)
 	for i := repeat - 1; i >= 0; i-- {

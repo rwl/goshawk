@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import "fmt"
@@ -17,7 +16,7 @@ func (m *Matrix) AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Matr
 	for r := 0; r < m.Rows(); r++ {
 		for c := 0; c < m.Columns(); c++ {
 			elem = m.GetQuick(r, c)
-			if cond(elem)  {
+			if cond(elem) {
 				m.SetQuick(r, c, f(elem))
 			}
 		}
@@ -49,7 +48,7 @@ func (m *Matrix) Assign(value float64) *Matrix {
 
 func (m *Matrix) AssignVector(values []float64) (*Matrix, error) {
 	if len(values) != m.Size() {
-		return m, fmt.Errorf("Must have same length: length=%d rows()*columns()=%d", len(values), m.Rows() * m.Columns())
+		return m, fmt.Errorf("Must have same length: length=%d rows()*columns()=%d", len(values), m.Rows()*m.Columns())
 	}
 	idx := 0
 	for r := 0; r < m.Rows(); r++ {
@@ -77,7 +76,7 @@ func (m *Matrix) AssignArray(values [][]float64) (*Matrix, error) {
 	return m, nil
 }
 
-func (m *Matrix) AssignMatrix(other MatrixData) (*Matrix, error) {
+func (m *Matrix) AssignMatrix(other Mat) (*Matrix, error) {
 	if other == m {
 		return m, nil
 	}
@@ -93,7 +92,7 @@ func (m *Matrix) AssignMatrix(other MatrixData) (*Matrix, error) {
 	return m, nil
 }
 
-func (m *Matrix) AssignMatrixFunc(y MatrixData, f Float64Float64Func) (*Matrix, error) {
+func (m *Matrix) AssignMatrixFunc(y Mat, f Float64Float64Func) (*Matrix, error) {
 	err := m.checkShape(y)
 	if err != nil {
 		return m, err
@@ -106,7 +105,7 @@ func (m *Matrix) AssignMatrixFunc(y MatrixData, f Float64Float64Func) (*Matrix, 
 	return m, nil
 }
 
-func (m *Matrix) AssignMatrixFuncSelection(y MatrixData, f Float64Float64Func, rowList, columnList []int) (*Matrix, error) {
+func (m *Matrix) AssignMatrixFuncSelection(y Mat, f Float64Float64Func, rowList, columnList []int) (*Matrix, error) {
 	err := m.checkShape(y)
 	if err != nil {
 		return m, err

@@ -1,8 +1,7 @@
-
 package tfloat64
 
 import (
-	"bitbucket.org/rwl/colt"
+	common "github.com/rwl/goshawk"
 	"fmt"
 )
 
@@ -17,36 +16,36 @@ import (
 // This class uses no delegation. Its instances point directly to the
 // data. Cell addressing overhead is 1 additional array index access
 // per get/set.
-type SelectedSparseVectorData struct {
-	*SparseVectorData
+type SelectedSparseVec struct {
+	*SparseVec
 	offsets []int // The offsets of visible indexes of this matrix.
 	offset  int   // The offset.
 }
 
-func (v *SelectedSparseVectorData) GetQuick(index int) float64 {
+func (v *SelectedSparseVec) GetQuick(index int) float64 {
 	return v.elements[v.Index(index)]
 }
 
-func (v *SelectedSparseVectorData) SetQuick(index int, value float64) {
+func (v *SelectedSparseVec) SetQuick(index int, value float64) {
 	v.elements[v.Index(index)] = value
 }
 
-func (v *SelectedSparseVectorData) Index(rank int) int {
-	return v.offset + v.offsets[v.Zero() + rank * v.Stride()]
+func (v *SelectedSparseVec) Index(rank int) int {
+	return v.offset + v.offsets[v.Zero() + rank*v.Stride()]
 }
 
-func (v *SelectedSparseVectorData) ViewVectorData() VectorData {
-	return &SelectedSparseVectorData{
-		&SparseVectorData{
-			colt.NewCoreVectorData(false, v.Size(), 0, 1),
+func (v *SelectedSparseVec) ViewVec() Vec {
+	return &SelectedSparseVec{
+		&SparseVec{
+			common.NewCoreVec(false, v.Size(), 0, 1),
 			v.elements,
 		},
 		v.offsets, v.offset,
 	}
 }
 
-func (v *SelectedSparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
-	if rows * columns != v.Size() {
+func (v *SelectedSparseVec) ReshapeMatrix(rows, columns int) (*Matrix, error) {
+	if rows*columns != v.Size() {
 		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewSparseMatrix(rows, columns)
@@ -60,8 +59,8 @@ func (v *SelectedSparseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, er
 	return M, nil
 }
 
-func (v *SelectedSparseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
-	if slices * rows * columns != v.Size() {
+func (v *SelectedSparseVec) ReshapeCube(slices, rows, columns int) (*Cube, error) {
+	if slices*rows*columns != v.Size() {
 		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewSparseCube(slices, rows, columns)

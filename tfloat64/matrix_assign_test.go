@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -8,7 +7,7 @@ import (
 )
 
 type assignMatrix interface {
-	MatrixData
+	Mat
 	Assign(value float64) *Matrix
 }
 
@@ -36,7 +35,7 @@ func testMatrixAssign(t *testing.T, A assignMatrix) {
 }
 
 type assignArrayMatrix interface {
-	MatrixData
+	Mat
 	AssignArray(values [][]float64) (*Matrix, error)
 }
 
@@ -72,7 +71,7 @@ func testMatrixAssignArray(t *testing.T, A assignArrayMatrix) {
 }
 
 type assignFuncMatrix interface {
-	MatrixData
+	Mat
 	AssignFunc(f Float64Func) *Matrix
 	Copy() *Matrix
 }
@@ -101,8 +100,8 @@ func testMatrixAssignFunc(t *testing.T, A assignFuncMatrix) {
 }
 
 type assignMatrixMatrix interface {
-	MatrixData
-	AssignMatrix(other MatrixData) (*Matrix, error)
+	Mat
+	AssignMatrix(other Mat) (*Matrix, error)
 }
 
 func TestDenseMatrixAssignMatrix(t *testing.T) {
@@ -131,8 +130,8 @@ func testMatrixAssignMatrix(t *testing.T, A, B assignMatrixMatrix) {
 }
 
 type assignMatrixFuncMatrix interface {
-	MatrixData
-	AssignMatrixFunc(y MatrixData, f Float64Float64Func) (*Matrix, error)
+	Mat
+	AssignMatrixFunc(y Mat, f Float64Float64Func) (*Matrix, error)
 	Copy() *Matrix
 }
 
@@ -163,8 +162,8 @@ func testMatrixAssignMatrixFunc(t *testing.T, A, B assignMatrixFuncMatrix) {
 }
 
 type assignMatrixFuncSelection interface {
-	MatrixData
-	AssignMatrixFuncSelection(y MatrixData, f Float64Float64Func, rowList, columnList []int) (*Matrix, error)
+	Mat
+	AssignMatrixFuncSelection(y Mat, f Float64Float64Func, rowList, columnList []int) (*Matrix, error)
 	Copy() *Matrix
 }
 
@@ -193,7 +192,7 @@ func testMatrixAssignMatrixFuncSelection(t *testing.T, A, B assignMatrixFuncSele
 	A.AssignMatrixFuncSelection(B, Div, rowList, columnList)
 	for r := 0; r < A.Rows(); r++ {
 		for c := 0; c < A.Columns(); c++ {
-			expected := Acopy.GetQuick(r, c) / B.GetQuick(r, c)
+			expected := Acopy.GetQuick(r, c)/B.GetQuick(r, c)
 			actual := A.GetQuick(r, c)
 			if math.Abs(expected - actual) > tol {
 				t.Errorf("expected:%g actual:%g", expected, actual)
@@ -203,7 +202,7 @@ func testMatrixAssignMatrixFuncSelection(t *testing.T, A, B assignMatrixFuncSele
 }
 
 type assignProcedureMatrix interface {
-	MatrixData
+	Mat
 	AssignProcedure(cond Float64Procedure, value float64) *Matrix
 	Copy() *Matrix
 }
@@ -245,7 +244,7 @@ func testMatrixAssignProcedure(t *testing.T, A assignProcedureMatrix) {
 }
 
 type assignProcedureFuncMatrix interface {
-	MatrixData
+	Mat
 	AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Matrix
 	Copy() *Matrix
 }

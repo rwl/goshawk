@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -7,7 +6,7 @@ import (
 )
 
 type aggregateMatrix interface {
-	MatrixData
+	Mat
 	Aggregate(aggr Float64Float64Func, f Float64Func) float64
 }
 
@@ -26,7 +25,7 @@ func testMatrixAggregate(t *testing.T, A aggregateMatrix) {
 	for r := 0; r < A.Rows(); r++ {
 		for c := 0; c < A.Columns(); c++ {
 			elem := A.GetQuick(r, c)
-			expected += elem * elem
+			expected += elem*elem
 		}
 	}
 	result := A.Aggregate(Plus, Square)
@@ -36,7 +35,7 @@ func testMatrixAggregate(t *testing.T, A aggregateMatrix) {
 }
 
 type aggregateProcedureMatrix interface {
-	MatrixData
+	Mat
 	AggregateProcedure(aggr Float64Float64Func, f Float64Func, cond Float64Procedure) float64
 }
 
@@ -63,7 +62,7 @@ func testMatrixAggregateProcedure(t *testing.T, A aggregateProcedureMatrix) {
 		for c := 0; c < A.Columns(); c++ {
 			elem := A.GetQuick(r, c)
 			if math.Abs(elem) > 0.2 {
-				expected += elem * elem
+				expected += elem*elem
 			}
 		}
 	}
@@ -75,7 +74,7 @@ func testMatrixAggregateProcedure(t *testing.T, A aggregateProcedureMatrix) {
 }
 
 type aggregateProcedureSelectionMatrix interface {
-MatrixData
+	Mat
 	AggregateProcedureSelection(aggr Float64Float64Func, f Float64Func, rowList, columnList []int) float64
 }
 
@@ -102,7 +101,7 @@ func testMatrixAggregateProcedureSelection(t *testing.T, A aggregateProcedureSel
 	for r := 0; r < A.Rows(); r++ {
 		for c := 0; c < A.Columns(); c++ {
 			elem := A.GetQuick(r, c)
-			expected += elem * elem
+			expected += elem*elem
 		}
 	}
 	result := A.AggregateProcedureSelection(Plus, Square, rowList, columnList)
@@ -112,8 +111,8 @@ func testMatrixAggregateProcedureSelection(t *testing.T, A aggregateProcedureSel
 }
 
 type aggregateMatrixMatrix interface {
-MatrixData
-	AggregateMatrix(other MatrixData, aggr Float64Float64Func, f Float64Float64Func) (float64, error)
+	Mat
+	AggregateMatrix(other Mat, aggr Float64Float64Func, f Float64Float64Func) (float64, error)
 }
 
 func TestDenseMatrixAggregateMatrix(t *testing.T) {
@@ -134,7 +133,7 @@ func testMatrixAggregateMatrix(t *testing.T, A, B aggregateMatrixMatrix) {
 		for c := 0; c < A.Columns(); c++ {
 			elemA := A.GetQuick(r, c)
 			elemB := B.GetQuick(r, c)
-			expected += elemA * elemB
+			expected += elemA*elemB
 		}
 	}
 	result, _ := A.AggregateMatrix(B, Plus, Mult)

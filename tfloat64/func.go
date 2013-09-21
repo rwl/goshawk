@@ -5,26 +5,26 @@ import (
 	"math/rand"
 )
 
-type Float64Func func(float64) float64
+type Float64Func func (float64) float64
 
-type Float64Float64Func func(float64, float64) float64
+type Float64Float64Func func (float64, float64) float64
 
-type Float64Procedure func(float64) bool
+type Float64Procedure func (float64) bool
 
-type Float64Float64Procedure func(float64, float64) float64
+type Float64Float64Procedure func (float64, float64) float64
 
-type IntIntFloat64Func func(int, int, float64) float64
+type IntIntFloat64Func func (int, int, float64) float64
 
-type VectorProcedure func(VectorData) bool
+type VectorProcedure func (Vec) bool
 
 // Function that returns a * a.
 func Square(a float64) float64 {
-	return a * a
+	return a*a
 }
 
 // Function that returns a * b.
 func Mult(a, b float64) float64 {
-	return a * b
+	return a*b
 }
 
 // Function that returns its argument.
@@ -34,7 +34,7 @@ func Identity(a float64) float64 {
 
 // Function that returns 1.0 / a.
 func Inv(a float64) float64 {
-	return 1.0 / a
+	return 1.0/a
 }
 
 // Function that returns -a.
@@ -71,12 +71,12 @@ func Compare(a, b float64) float64 {
 
 // Function that returns a / b.
 func Div(a, b float64) float64 {
-	return a / b
+	return a/b
 }
 
 // Function that returns -(a / b).
 func DivNeg(a, b float64) float64 {
-	return -(a / b)
+	return -(a/b)
 }
 
 // Function that returns a == b ? 1 : 0.
@@ -123,7 +123,7 @@ func Less(a, b float64) float64 {
 
 // Function that returns math.Log(a) / math.Log(b).
 func Lg(a, b float64) float64 {
-	return math.Log(a) / math.Log(b)
+	return math.Log(a)/math.Log(b)
 }
 
 // Function that returns a - b.
@@ -133,12 +133,12 @@ func Minus(a, b float64) float64 {
 
 // Function that returns -(a * b).
 func MultNeg(a, b float64) float64 {
-	return -(a * b)
+	return -(a*b)
 }
 
 // Function that returns a * b^2.
 func MultSquare(a, b float64) float64 {
-	return a * b * b
+	return a*b*b
 }
 
 // Function that returns a + b.
@@ -167,7 +167,7 @@ func Between(from, to float64) Float64Func {
 // operand (argument) fixed to the given constant "c". The second
 // operand is variable (free).
 func BindArg1(f Float64Float64Func, c float64) Float64Func {
-	return func (v float64) float64 {
+	return func(v float64) float64 {
 		return f(c, v)
 	}
 }
@@ -226,7 +226,7 @@ func Constant(c float64) Float64Func {
 // Constructs a function that returns a / b. a is a
 // variable, b is fixed.
 func Divide(b float64) Float64Func {
-	return Multiply(1 / b)
+	return Multiply(1/b)
 }
 
 // Constructs a function that returns a == b ? 1 : 0. a is
@@ -308,9 +308,9 @@ func LessThan(b float64) Float64Func {
 // Constructs a function that returns math.Log(a) / math.Log(b).
 // a is a variable, b is fixed.
 func LgVal(b float64) Float64Func {
-	logInv := 1 / math.Log(b)
+	logInv := 1/math.Log(b)
 	return func(a float64) float64 {
-		return math.Log(a) * logInv
+		return math.Log(a)*logInv
 	}
 }
 
@@ -354,7 +354,7 @@ func Mod(b float64) Float64Func {
 // variable, b is fixed.
 func Multiply(b float64) Float64Func {
 	return func(a float64) float64 {
-		return a * b
+		return a*b
 	}
 }
 
@@ -369,7 +369,7 @@ func Add(b float64) Float64Func {
 // Constructs a function that returns b*constant.
 func MultSecond(constant float64) Float64Float64Func {
 	return func(_, b float64) float64 {
-		return b * constant
+		return b*constant
 	}
 }
 
@@ -377,7 +377,7 @@ func MultSecond(constant float64) Float64Float64Func {
 // and b are variables, constant is fixed.
 func PlusMultSecond(constant float64) Float64Float64Func {
 	return func(a, b float64) float64 {
-		return a + b * constant
+		return a + b*constant
 	}
 }
 
@@ -385,7 +385,7 @@ func PlusMultSecond(constant float64) Float64Float64Func {
 // and b are variables, constant is fixed.
 func PlusMultFirst(constant float64) Float64Float64Func {
 	return func(a, b float64) float64 {
-		return a * constant + b
+		return a*constant + b
 	}
 }
 

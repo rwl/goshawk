@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -7,10 +6,10 @@ import (
 )
 
 type Matrix struct {
-	MatrixData
+	Mat
 }
 
-func (m *Matrix) checkShape(other MatrixData) error {
+func (m *Matrix) checkShape(other Mat) error {
 	if m.Rows() != other.Rows() || m.Columns() != other.Columns() {
 		return fmt.Errorf("row sizes do not match: %d!=%d", m.Rows(), other.Rows())
 	}
@@ -53,7 +52,7 @@ func (m *Matrix) StringShort() string {
 
 // Returns the number of cells which is Rows()*Columns().
 func (m *Matrix) Size() int {
-	return m.Rows() * m.Columns()
+	return m.Rows()*m.Columns()
 }
 
 func (m *Matrix) Get(row int, column int) (float64, error) {
@@ -93,7 +92,7 @@ func (m *Matrix) Equals(value float64) bool {
 	return prop.MatrixEqualsValue(m, value)
 }
 
-func (m *Matrix) EqualsMatrix(other MatrixData) bool {
+func (m *Matrix) EqualsMatrix(other Mat) bool {
 	return prop.MatrixEqualsMatrix(m, other)
 }
 
@@ -219,10 +218,10 @@ func (m *Matrix) Normalize() *Matrix {
 	}
 	max, _, _ := m.MaxLocation()
 	if max == 0 {
-		m.Assign(1.0 / float64(m.Size()))
+		m.Assign(1.0/float64(m.Size()))
 	} else {
 		sumScaleFactor := m.ZSum()
-		sumScaleFactor = 1.0 / sumScaleFactor
+		sumScaleFactor = 1.0/sumScaleFactor
 		m.AssignFunc(Multiply(sumScaleFactor))
 	}
 	return m

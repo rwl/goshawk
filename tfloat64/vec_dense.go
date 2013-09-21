@@ -1,47 +1,46 @@
-
 package tfloat64
 
 import (
-	"bitbucket.org/rwl/colt"
+	common "github.com/rwl/goshawk"
 	"fmt"
 )
 
 func NewVector(size int) *Vector {
 	return &Vector{
-		&DenseVectorData{
-			colt.NewCoreVectorData(false, size, 0, 1),
+		&DenseVec{
+			common.NewCoreVec(false, size, 0, 1),
 			make([]float64, size),
 		},
 	}
 }
 
-type DenseVectorData struct {
-	*colt.CoreVectorData
+type DenseVec struct {
+	*common.CoreVec
 	elements []float64 // The elements of this matrix.
 }
 
-func (v *DenseVectorData) GetQuick(index int) float64 {
+func (v *DenseVec) GetQuick(index int) float64 {
 	return v.elements[v.Index(index)]
 }
 
-func (v *DenseVectorData) SetQuick(index int, value float64) {
+func (v *DenseVec) SetQuick(index int, value float64) {
 	v.elements[v.Index(index)] = value
 }
 
-func (v *DenseVectorData) Elements() interface{} {
+func (v *DenseVec) Elements() interface{} {
 	return v.elements
 }
 
-func (v *DenseVectorData) Like(size int) VectorData {
-	return &DenseVectorData{
-		colt.NewCoreVectorData(false, size, 0, 1),
+func (v *DenseVec) Like(size int) Vec {
+	return &DenseVec{
+		common.NewCoreVec(false, size, 0, 1),
 		make([]float64, size),
 	}
 }
 
-func (v *DenseVectorData) LikeMatrix(rows, columns int) MatrixData {
-	return nil/*DenseMatrixData{
-		CoreMatrixData{
+func (v *DenseVec) LikeMatrix(rows, columns int) Mat {
+	return nil/*DenseMat{
+		CoreMat{
 			isView: false,
 			columns: columns,
 			rows: rows,
@@ -54,25 +53,25 @@ func (v *DenseVectorData) LikeMatrix(rows, columns int) MatrixData {
 	}*/
 }
 
-func (v *DenseVectorData) ViewSelectionLike(offsets []int) VectorData {
-	return &SelectedDenseVectorData{
-		&DenseVectorData{
-			colt.NewCoreVectorData(false, len(offsets), 0, 1),
+func (v *DenseVec) ViewSelectionLike(offsets []int) Vec {
+	return &SelectedDenseVec{
+		&DenseVec{
+			common.NewCoreVec(false, len(offsets), 0, 1),
 			v.elements,
 		},
 		offsets, 0,
 	}
 }
 
-func (v *DenseVectorData) ViewVectorData() VectorData {
-	return &DenseVectorData{
-		colt.NewCoreVectorData(v.IsView(), v.Size(), v.Zero(), v.Stride()),
+func (v *DenseVec) ViewVec() Vec {
+	return &DenseVec{
+		common.NewCoreVec(v.IsView(), v.Size(), v.Zero(), v.Stride()),
 		v.elements,
 	}
 }
 
-func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
-	if rows * columns != v.Size() {
+func (v *DenseVec) ReshapeMatrix(rows, columns int) (*Matrix, error) {
+	if rows*columns != v.Size() {
 		return nil, fmt.Errorf("rows*columns != size")
 	}
 	M := NewMatrix(rows, columns)
@@ -82,7 +81,7 @@ func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	var idxOther int
 	idx := v.Zero()
 	for c := 0; c < columns; c++ {
-		idxOther = zeroOther + c * M.ColumnStride()
+		idxOther = zeroOther + c*M.ColumnStride()
 		for r := 0; r < rows; r++ {
 			elementsOther[idxOther] = v.elements[idx]
 			idxOther += M.RowStride()
@@ -92,8 +91,8 @@ func (v *DenseVectorData) ReshapeMatrix(rows, columns int) (*Matrix, error) {
 	return M, nil
 }
 
-func (v *DenseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) {
-	if slices * rows * columns != v.Size() {
+func (v *DenseVec) ReshapeCube(slices, rows, columns int) (*Cube, error) {
+	if slices*rows*columns != v.Size() {
 		return nil, fmt.Errorf("slices*rows*columns != size")
 	}
 	M := NewCube(slices, rows, columns)
@@ -104,7 +103,7 @@ func (v *DenseVectorData) ReshapeCube(slices, rows, columns int) (*Cube, error) 
 	idx := v.Zero()
 	for s := 0; s < slices; s++ {
 		for c := 0; c < columns; c++ {
-			idxOther = zeroOther + s * M.SliceStride() + c * M.ColumnStride()
+			idxOther = zeroOther + s*M.SliceStride() + c*M.ColumnStride()
 			for r := 0; r < rows; r++ {
 				elementsOther[idxOther] = v.elements[idx]
 				idxOther += M.RowStride()

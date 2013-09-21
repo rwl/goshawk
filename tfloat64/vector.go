@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -12,10 +11,10 @@ var (
 )
 
 type Vector struct {
-	VectorData
+	Vec
 }
 
-func (v *Vector) checkSize(other VectorData) error {
+func (v *Vector) checkSize(other Vec) error {
 	if v.Size() != other.Size() {
 		return fmt.Errorf("Incompatible sizes: %s and %s",
 			fmtr.VectorShape(v), fmtr.VectorShape(other))
@@ -73,7 +72,7 @@ func (v *Vector) Copy() *Vector {
 // Use Copy() to construct an independent deep copy rather than a
 // new view.
 func (v *Vector) ViewVector() *Vector {
-	return &Vector{v.ViewVectorData()}
+	return &Vector{v.ViewVec()}
 }
 
 // Returns the number of cells having non-zero values; ignores tolerance.
@@ -97,7 +96,7 @@ func (v *Vector) Equals(value float64) bool {
 // and is at least a vector that has the same
 // size as the receiver and has exactly the same values at the same
 // indexes.
-func (v *Vector) EqualsVector(other VectorData) bool {
+func (v *Vector) EqualsVector(other Vec) bool {
 	return prop.VectorEqualsVector(v, other)
 }
 
@@ -131,7 +130,6 @@ func (v *Vector) MinLocation() (float64, int) {
 	return minValue, location
 }
 
-
 // Fills the coordinates and values of cells having negative values into the
 // specified lists. Fills into the lists, starting at index 0. After this
 // call returns the specified lists all have a new size, the number of
@@ -145,7 +143,7 @@ func (v *Vector) NegativeValues(indexList *[]int, valueList *[]float64) {
 	if fillValueList {
 		*valueList = make([]float64, 0)
 	}
-	rem := v.Size() % 2
+	rem := v.Size()%2
 	var value float64
 	if rem == 1 {
 		value = v.GetQuick(0)
@@ -205,7 +203,7 @@ func (v *Vector) NonZeros(indexList *[]int, valueList *[]float64) {
 	if fillValueList {
 		*valueList = make([]float64, 0)
 	}
-	rem := v.Size() % 2
+	rem := v.Size()%2
 	var value float64
 	if rem == 1 {
 		value = v.GetQuick(0)
@@ -246,7 +244,7 @@ func (v *Vector) NonZeros(indexList *[]int, valueList *[]float64) {
 // lists, starting at index 0. After this call returns the specified lists
 // all have a new size, the number of non-zero values.
 func (v *Vector) NonZerosCardinality(indexList *[]int, valueList *[]float64,
-		maxCardinality int) {
+maxCardinality int) {
 	fillIndexList := indexList != nil
 	fillValueList := valueList != nil
 	if fillIndexList {
@@ -286,7 +284,7 @@ func (v *Vector) PositiveValues(indexList *[]int, valueList *[]float64) {
 	if fillValueList {
 		*valueList = make([]float64, 0)
 	}
-	rem := v.Size() % 2
+	rem := v.Size()%2
 	var value float64
 	if (rem == 1) {
 		value = v.GetQuick(0)
@@ -332,16 +330,16 @@ func (v *Vector) Normalize() {
 	}
 	max, _ := v.MaxLocation()
 	if max == 0 {
-		v.Assign(1.0 / float64(v.Size()))
+		v.Assign(1.0/float64(v.Size()))
 	} else {
 		sumScaleFactor := v.ZSum()
-		sumScaleFactor = 1.0 / sumScaleFactor
+		sumScaleFactor = 1.0/sumScaleFactor
 		v.AssignFunc(Multiply(sumScaleFactor))
 	}
 }
 
 // Swaps each element v[i] with other[i].
-func (v *Vector) Swap(other VectorData) error {
+func (v *Vector) Swap(other Vec) error {
 	err := v.checkSize(other)
 	if err != nil {
 		return err
@@ -383,14 +381,14 @@ func (v *Vector) FillArray(values []float64) error {
 // Returns the dot product of two vectors x and y, which is
 // Sum(x[i]*y[i]). Where x == this. Operates on cells at
 // indexes 0 .. math.Min(size(), y.size()).
-func (v *Vector) ZDotProduct(y VectorData) float64 {
+func (v *Vector) ZDotProduct(y Vec) float64 {
 	return v.ZDotProductRange(y, 0, v.Size())
 }
 
 // Returns the dot product of two vectors x and y, which is
 // Sum(x[i]*y[i]). Where x == this. Operates on cells at
 // indexes from .. Min(Size(), y.Size(),from+length)-1.
-func (v *Vector) ZDotProductRange(y VectorData, from, length int) float64 {
+func (v *Vector) ZDotProductRange(y Vec, from, length int) float64 {
 	if from < 0 || length <= 0 {
 		return 0
 	}
@@ -407,7 +405,7 @@ func (v *Vector) ZDotProductRange(y VectorData, from, length int) float64 {
 	sum := 0.0
 	i := tail - 1
 	for k := 0; k < length; i-- {
-		sum += v.GetQuick(i) * y.GetQuick(i)
+		sum += v.GetQuick(i)*y.GetQuick(i)
 		k++
 	}
 	return sum
@@ -415,8 +413,8 @@ func (v *Vector) ZDotProductRange(y VectorData, from, length int) float64 {
 
 // Returns the dot product of two vectors x and y, which is
 // Sum(x[i]*y[i]). Where x == this.
-func (v *Vector) ZDotProductSelection(y VectorData, from, length int,
-		nonZeroIndexes []int) float64 {
+func (v *Vector) ZDotProductSelection(y Vec, from, length int,
+nonZeroIndexes []int) float64 {
 	// determine minimum length
 	if from < 0 || length <= 0 {
 		return 0
@@ -447,7 +445,7 @@ func (v *Vector) ZDotProductSelection(y VectorData, from, length int,
 	sum := 0.0
 	length--
 	for length >= 0 && index < s && i < tail {
-		sum += v.GetQuick(i) * y.GetQuick(i)
+		sum += v.GetQuick(i)*y.GetQuick(i)
 		index++
 		i = nonZeroIndexes[index]
 		length--

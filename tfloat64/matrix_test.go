@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import (
@@ -6,7 +5,7 @@ import (
 )
 
 const (
-	nrows = 13
+	nrows    = 13
 	ncolumns = 17
 )
 

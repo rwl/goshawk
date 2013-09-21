@@ -1,15 +1,15 @@
-
 package tfloat64
 
 import (
 	"testing"
 	"math/rand"
 	"math"
+	common "github.com/rwl/goshawk"
 )
 
 const (
-	test_size = 2 * 17 * 5
-	tol = 1e-10
+	test_size = 2*17*5
+	tol       = 1e-10
 )
 
 func makeDenseVector() (*Vector) {
@@ -29,7 +29,7 @@ func makeSparseVector() (*Vector) {
 }
 
 type cardinalityVector interface {
-	VectorData
+Vec
 	Cardinality() int
 }
 
@@ -77,8 +77,8 @@ func testEquals(t *testing.T, A equalsVector) {
 }
 
 type equalsVectorVector interface {
-	VectorData
-	EqualsVector(VectorData) bool
+Vec
+	EqualsVector(Vec) bool
 }
 
 func TestDenseEqualsVector(t *testing.T) {
@@ -103,7 +103,7 @@ func testEqualsVector(t *testing.T, A, B equalsVectorVector) {
 }
 
 type maxLocationVector interface {
-	VectorData
+Vec
 	Assign(float64) *Vector
 	MaxLocation() (float64, int)
 }
@@ -121,19 +121,19 @@ func TestSparseMaxLocation(t *testing.T) {
 func testMaxLocation(t *testing.T, A maxLocationVector) {
 	A.Assign(0)
 	value := 0.7
-	A.SetQuick(A.Size() / 3, value)
-	A.SetQuick(A.Size() / 2, 0.1)
+	A.SetQuick(A.Size()/3, value)
+	A.SetQuick(A.Size()/2, 0.1)
 	max, loc := A.MaxLocation()
 	if math.Abs(value - max) > tol {
 		t.Errorf("expected:%g actual:%g", value, max)
 	}
-	if A.Size() / 3 != loc {
-		t.Errorf("expected:%d actual:%d", A.Size() / 3, loc)
+	if A.Size()/3 != loc {
+		t.Errorf("expected:%d actual:%d", A.Size()/3, loc)
 	}
 }
 
 type minLocationVector interface {
-	VectorData
+Vec
 	Assign(float64) *Vector
 	MinLocation() (float64, int)
 }
@@ -151,19 +151,19 @@ func TestSparseMinLocation(t *testing.T) {
 func testMinLocation(t *testing.T, A minLocationVector) {
 	A.Assign(0)
 	value := -0.7
-	A.SetQuick(A.Size() / 3, value)
-	A.SetQuick(A.Size() / 2, -0.1)
+	A.SetQuick(A.Size()/3, value)
+	A.SetQuick(A.Size()/2, -0.1)
 	min, loc := A.MinLocation()
 	if math.Abs(value - min) > tol {
 		t.Errorf("expected:%g actual:%g", value, min)
 	}
-	if A.Size() / 3 != loc {
-		t.Errorf("expected:%d actual:%d", A.Size() / 3, loc)
+	if A.Size()/3 != loc {
+		t.Errorf("expected:%d actual:%d", A.Size()/3, loc)
 	}
 }
 
 type negativeValuesVector interface {
-	VectorData
+Vec
 	Assign(float64) *Vector
 	NegativeValues(*[]int, *[]float64)
 }
@@ -180,8 +180,8 @@ func TestSparseNegativeValues(t *testing.T) {
 
 func testGetNegativeValues(t *testing.T, A negativeValuesVector) {
 	A.Assign(0)
-	A.SetQuick(A.Size() / 3, -0.7)
-	A.SetQuick(A.Size() / 2, -0.1)
+	A.SetQuick(A.Size()/3, -0.7)
+	A.SetQuick(A.Size()/2, -0.1)
 	var indexList []int
 	var valueList []float64
 	A.NegativeValues(&indexList, &valueList)
@@ -191,22 +191,22 @@ func testGetNegativeValues(t *testing.T, A negativeValuesVector) {
 	if len(valueList) != 2 {
 		t.Errorf("expected:%d actual:%d", 2, len(valueList))
 	}
-	if !ContainsInt(indexList, A.Size() / 3) {
-		t.Errorf("missing:%d", A.Size() / 3)
+	if !common.ContainsInt(indexList, A.Size()/3) {
+		t.Errorf("missing:%d", A.Size()/3)
 	}
-	if !ContainsInt(indexList, A.Size() / 2) {
-		t.Errorf("missing:%d", A.Size() / 2)
+	if !common.ContainsInt(indexList, A.Size()/2) {
+		t.Errorf("missing:%d", A.Size()/2)
 	}
-	if !ContainsFloat(valueList, -0.7, tol) {
+	if !common.ContainsFloat(valueList, -0.7, tol) {
 		t.Errorf("missing:%g", -0.7)
 	}
-	if !ContainsFloat(valueList, -0.1, tol) {
+	if !common.ContainsFloat(valueList, -0.1, tol) {
 		t.Errorf("missing:%g", -0.1)
 	}
 }
 
 type nonZerosVector interface {
-	VectorData
+Vec
 	Assign(float64) *Vector
 	NonZeros(*[]int, *[]float64)
 }
@@ -223,8 +223,8 @@ func TestSparseNonZeros(t *testing.T) {
 
 func testNonZeros(t *testing.T, A nonZerosVector) {
 	A.Assign(0)
-	A.SetQuick(A.Size() / 3, 0.7)
-	A.SetQuick(A.Size() / 2, 0.1)
+	A.SetQuick(A.Size()/3, 0.7)
+	A.SetQuick(A.Size()/2, 0.1)
 	var indexList []int
 	var valueList []float64
 	A.NonZeros(&indexList, &valueList)
@@ -234,22 +234,22 @@ func testNonZeros(t *testing.T, A nonZerosVector) {
 	if len(valueList) != 2 {
 		t.Errorf("expected:%d actual:%d", 2, len(valueList))
 	}
-	if !ContainsInt(indexList, A.Size() / 3) {
-		t.Errorf("missing:%d", A.Size() / 3)
+	if !common.ContainsInt(indexList, A.Size()/3) {
+		t.Errorf("missing:%d", A.Size()/3)
 	}
-	if !ContainsInt(indexList, A.Size() / 2) {
-		t.Errorf("missing:%d", A.Size() / 2)
+	if !common.ContainsInt(indexList, A.Size()/2) {
+		t.Errorf("missing:%d", A.Size()/2)
 	}
-	if !ContainsFloat(valueList, 0.7, tol) {
+	if !common.ContainsFloat(valueList, 0.7, tol) {
 		t.Errorf("missing:%g", 0.7)
 	}
-	if !ContainsFloat(valueList, 0.1, tol) {
+	if !common.ContainsFloat(valueList, 0.1, tol) {
 		t.Errorf("missing:%g", 0.1)
 	}
 }
 
 type positiveValuesVector interface {
-	VectorData
+Vec
 	Assign(float64) *Vector
 	PositiveValues(*[]int, *[]float64)
 }
@@ -266,8 +266,8 @@ func TestSparsePositiveValues(t *testing.T) {
 
 func testPositiveValues(t *testing.T, A positiveValuesVector) {
 	A.Assign(0)
-	A.SetQuick(A.Size() / 3, 0.7)
-	A.SetQuick(A.Size() / 2, 0.1)
+	A.SetQuick(A.Size()/3, 0.7)
+	A.SetQuick(A.Size()/2, 0.1)
 	var indexList []int
 	var valueList []float64
 	A.PositiveValues(&indexList, &valueList)
@@ -277,22 +277,22 @@ func testPositiveValues(t *testing.T, A positiveValuesVector) {
 	if len(valueList) != 2 {
 		t.Errorf("expected:%d actual:%d", 2, len(valueList))
 	}
-	if !ContainsInt(indexList, A.Size() / 3) {
-		t.Errorf("missing:%d", A.Size() / 3)
+	if !common.ContainsInt(indexList, A.Size()/3) {
+		t.Errorf("missing:%d", A.Size()/3)
 	}
-	if !ContainsInt(indexList, A.Size() / 2) {
-		t.Errorf("missing:%d", A.Size() / 2)
+	if !common.ContainsInt(indexList, A.Size()/2) {
+		t.Errorf("missing:%d", A.Size()/2)
 	}
-	if !ContainsFloat(valueList, 0.7, tol) {
+	if !common.ContainsFloat(valueList, 0.7, tol) {
 		t.Errorf("missing:%g", 0.7)
 	}
-	if !ContainsFloat(valueList, 0.1, tol) {
+	if !common.ContainsFloat(valueList, 0.1, tol) {
 		t.Errorf("missing:%g", 0.1)
 	}
 }
 
 type toArrayVector interface {
-	VectorData
+Vec
 	ToArray() []float64
 }
 
@@ -321,7 +321,7 @@ func testToArray(t *testing.T, A toArrayVector) {
 }
 
 type fillArrayVector interface {
-	VectorData
+Vec
 	FillArray([]float64) error
 }
 
@@ -351,7 +351,7 @@ func testFillArray(t *testing.T, A fillArrayVector) {
 }
 
 type reshapeMatrixVector interface {
-	VectorData
+Vec
 }
 
 func TestDenseReshapeMatrix(t *testing.T) {
@@ -384,7 +384,7 @@ func testReshapeMatrix(t *testing.T, A reshapeMatrixVector) {
 }
 
 type reshapeCubeVector interface {
-	VectorData
+Vec
 }
 
 func TestDenseReshapeCube(t *testing.T) {
@@ -420,8 +420,8 @@ func testReshapeCube(t *testing.T, A reshapeCubeVector) {
 }
 
 type swapVector interface {
-	VectorData
-	Swap(VectorData) error
+Vec
+	Swap(Vec) error
 	Copy() *Vector
 }
 
@@ -457,8 +457,8 @@ func testSwap(t *testing.T, A, B swapVector) {
 }
 
 type dotProductVector interface {
-	VectorData
-	ZDotProduct(VectorData) float64
+Vec
+	ZDotProduct(Vec) float64
 }
 
 func TestDenseZDotProduct(t *testing.T) {
@@ -477,7 +477,7 @@ func testZDotProduct(t *testing.T, A, B dotProductVector) {
 	product := A.ZDotProduct(B)
 	var expected float64 = 0
 	for i := 0; i < A.Size(); i++ {
-		expected += A.GetQuick(i) * B.GetQuick(i)
+		expected += A.GetQuick(i)*B.GetQuick(i)
 	}
 	if math.Abs(expected - product) > tol {
 		t.Errorf("expected:%g actual:%g", expected, product)
@@ -485,8 +485,8 @@ func testZDotProduct(t *testing.T, A, B dotProductVector) {
 }
 
 type dotProductRangeVector interface {
-	VectorData
-	ZDotProductRange(VectorData, int, int) float64
+Vec
+	ZDotProductRange(Vec, int, int) float64
 }
 
 func TestDenseZDotProductRange(t *testing.T) {
@@ -505,7 +505,7 @@ func testZDotProductRange(t *testing.T, A, B dotProductRangeVector) {
 	product := A.ZDotProductRange(B, 5, B.Size() - 10)
 	var expected float64 = 0
 	for i := 5; i < A.Size() - 5; i++ {
-		expected += A.GetQuick(i) * B.GetQuick(i)
+		expected += A.GetQuick(i)*B.GetQuick(i)
 	}
 	if math.Abs(expected - product) > tol {
 		t.Errorf("expected:%g actual:%g", expected, product)
@@ -513,8 +513,8 @@ func testZDotProductRange(t *testing.T, A, B dotProductRangeVector) {
 }
 
 type dotProductSelectionVector interface {
-	VectorData
-	ZDotProductSelection(VectorData, int, int, []int) float64
+Vec
+	ZDotProductSelection(Vec, int, int, []int) float64
 	NonZeros(*[]int, *[]float64)
 }
 
@@ -536,7 +536,7 @@ func testZDotProductSelection(t *testing.T, A, B dotProductSelectionVector) {
 	product := A.ZDotProductSelection(B, 5, B.Size() - 10, indexList)
 	var expected float64 = 0
 	for i := 5; i < A.Size() - 5; i++ {
-		expected += A.GetQuick(i) * B.GetQuick(i)
+		expected += A.GetQuick(i)*B.GetQuick(i)
 	}
 	if math.Abs(expected - product) > tol {
 		t.Errorf("expected:%g actual:%g", expected, product)
@@ -544,7 +544,7 @@ func testZDotProductSelection(t *testing.T, A, B dotProductSelectionVector) {
 }
 
 type sumVector interface {
-	VectorData
+Vec
 	ZSum() float64
 }
 

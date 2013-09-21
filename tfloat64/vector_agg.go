@@ -1,4 +1,3 @@
-
 package tfloat64
 
 import "math"
@@ -60,7 +59,7 @@ func (v *Vector) AggregateIndexed(aggr Float64Float64Func, f Float64Func, indexL
 // 	 // Sum( (x[i]+y[i])^2 )
 // 	 x.aggregate(y, Plus, Chain(Square, Plus))
 // 	 --> 56
-func (v *Vector) AggregateVector(other VectorData, aggr, f Float64Float64Func) (float64, error) {
+func (v *Vector) AggregateVector(other Vec, aggr, f Float64Float64Func) (float64, error) {
 	err := v.checkSize(other)
 	if err != nil {
 		return math.NaN(), err
