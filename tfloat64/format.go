@@ -2,7 +2,7 @@ package tfloat64
 
 import (
 	"fmt"
-	common "github.com/rwl/goshawk"
+	"github.com/rwl/goshawk/common"
 )
 
 // Flexible, well human readable matrix print formatting; By default decimal

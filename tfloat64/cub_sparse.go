@@ -1,6 +1,6 @@
 package tfloat64
 
-import common "github.com/rwl/goshawk"
+import "github.com/rwl/goshawk/common"
 
 type SparseCub struct {
 	*common.CoreCub

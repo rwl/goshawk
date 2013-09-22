@@ -1,4 +1,4 @@
-package goshawk
+package common
 
 import "math"
 

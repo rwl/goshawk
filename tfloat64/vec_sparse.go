@@ -1,7 +1,7 @@
 package tfloat64
 
 import (
-	common "github.com/rwl/goshawk"
+	"github.com/rwl/goshawk/common"
 	"fmt"
 )
 

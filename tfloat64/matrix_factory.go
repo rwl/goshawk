@@ -1,7 +1,7 @@
 
 package tfloat64
 
-import common "github.com/rwl/goshawk"
+import "github.com/rwl/goshawk/common"
 
 // Returns a new dense matrix with the given number of rows and columns.
 func NewMatrix(rows, columns int) *Matrix {

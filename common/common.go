@@ -1,4 +1,4 @@
-package goshawk
+package common
 
 // Interface for all backends.
 type Base interface {

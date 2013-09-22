@@ -1,5 +1,22 @@
 package tfloat64
 
+import "github.com/rwl/goshawk/common"
+
+func NewVector(size int) *Vector {
+	return &Vector{
+		&DenseVec{
+			common.NewCoreVec(false, size, 0, 1),
+			make([]float64, size),
+		},
+	}
+}
+
+func NewVectorArray(a []float64) *Vector {
+	v := NewVector(len(a))
+	v.AssignArray(a)
+	return v
+}
+
 //C = A||B; Constructs a new matrix which is the concatenation of two other
 // matrices. Example: 0 1 append 3 4 --> 0 1 3 4.
 func AppendVectors(A, B Vec) *Vector {

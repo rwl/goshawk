@@ -1,18 +1,9 @@
 package tfloat64
 
 import (
-	common "github.com/rwl/goshawk"
+	"github.com/rwl/goshawk/common"
 	"fmt"
 )
-
-func NewVector(size int) *Vector {
-	return &Vector{
-		&DenseVec{
-			common.NewCoreVec(false, size, 0, 1),
-			make([]float64, size),
-		},
-	}
-}
 
 type DenseVec struct {
 	*common.CoreVec

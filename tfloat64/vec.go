@@ -1,6 +1,6 @@
 package tfloat64
 
-import common "github.com/rwl/goshawk"
+import "github.com/rwl/goshawk/common"
 
 // Interface for all vector backends.
 type Vec interface {

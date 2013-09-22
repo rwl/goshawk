@@ -4,7 +4,7 @@ import (
 	"testing"
 	"math/rand"
 	"math"
-	common "github.com/rwl/goshawk"
+	"github.com/rwl/goshawk/common"
 )
 
 const (

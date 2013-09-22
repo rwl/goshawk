@@ -1,7 +1,7 @@
 
 package tfloat64
 
-import common "github.com/rwl/goshawk"
+import "github.com/rwl/goshawk/common"
 
 func NewCube(slices, rows, columns int) *Cube {
 	return &Cube{
