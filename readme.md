@@ -21,3 +21,12 @@ go test github.com/rwl/goshawk
 <a href="https://travis-ci.org/rwl/goshawk" target="_blank">
   <img src="https://api.travis-ci.org/rwl/goshawk.png" alt="Build Status">
 </a>
+
+## Benchmark
+
+To benchmark Goshawk run:
+
+```
+export GOMAXPROCS=2
+go test -run=ZZZ -bench=. github.com/rwl/goshawk
+```
