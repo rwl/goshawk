@@ -57,24 +57,6 @@ func (f *Formatter) FormatRow(vector Vec) []string {
 	return strings
 }
 
-// Returns a short string representation describing the shape of the vector.
-func (f *Formatter) VectorShape(vector Vec) string {
-	// return "Matrix1D of size="+matrix.Size
-	// return matrix.Size+" element matrix"
-	// return "matrix("+matrix.Size+")"
-	return fmt.Sprintf("%d vector", vector.Size())
-}
-
-// Returns a short string representation describing the shape of the matrix.
-func (f *Formatter) MatrixShape(matrix Mat) string {
-	return fmt.Sprintf("%d x %d matrix", matrix.Rows(), matrix.Columns())
-}
-
-// Returns a short string representation describing the shape of the cube.
-func (f *Formatter) CubeShape(matrix Cub) string {
-	return fmt.Sprintf("%d x %d x %d matrix", matrix.Slices(), matrix.Rows(), matrix.Columns())
-}
-
 // Returns a string representation of the given vector.
 func (f *Formatter) VectorToString(v Vec) string {
 	//	easy := NewMatrix(1, v.Size())

@@ -9,4 +9,5 @@ type Mat interface {
 	SetQuick(int, int, float64)
 
 	Like(int, int) Mat
+	LikeVector(size int) Vec
 }

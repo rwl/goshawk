@@ -220,3 +220,21 @@ func (f *FormatterBase) ArrayToString(strings [][]string) string {
 	}
 	return total.String()
 }
+
+// Returns a short string representation describing the shape of the vector.
+func VectorShape(vector Vec) string {
+	// return "Matrix1D of size="+matrix.Size
+	// return matrix.Size+" element matrix"
+	// return "matrix("+matrix.Size+")"
+	return fmt.Sprintf("%d vector", vector.Size())
+}
+
+// Returns a short string representation describing the shape of the matrix.
+func MatrixShape(matrix Mat) string {
+	return fmt.Sprintf("%d x %d matrix", matrix.Rows(), matrix.Columns())
+}
+
+// Returns a short string representation describing the shape of the cube.
+func CubeShape(cube Cub) string {
+	return fmt.Sprintf("%d x %d x %d matrix", cube.Slices(), cube.Rows(), cube.Columns())
+}

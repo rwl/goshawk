@@ -1,6 +1,14 @@
 package common
 
-import "math"
+import (
+	"math"
+)
+
+const (
+	VectorThreshold = 32768
+	MatrixThreshold = 65536
+	CubeThreshold = 65536
+)
 
 func ContainsInt(a []int, x int) bool {
 	contains := false
@@ -23,4 +31,11 @@ func ContainsFloat(a []float64, x, prec float64) bool {
 		}
 	}
 	return contains
+}
+
+func Min(x, y int) int {
+	if x > y {
+		return y
+	}
+	return x
 }

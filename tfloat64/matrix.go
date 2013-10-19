@@ -3,56 +3,16 @@ package tfloat64
 import (
 	"fmt"
 	"math"
+	"errors"
 )
 
 type Matrix struct {
 	Mat
 }
 
-func (m *Matrix) checkShape(other Mat) error {
-	if m.Rows() != other.Rows() || m.Columns() != other.Columns() {
-		return fmt.Errorf("row sizes do not match: %d!=%d", m.Rows(), other.Rows())
-	}
-	if m.Columns() != other.Columns() {
-		return fmt.Errorf("column sizes do not match: %d!=%d", m.Columns(), other.Columns())
-	}
-	return nil
-}
-
-func (m *Matrix) checkColumn(column int) error {
-	if column < 0 || column >= m.Columns() {
-		return fmt.Errorf("Attempted to access %s at column=%d", m.StringShort(), column)
-	}
-	return nil
-}
-
-func (m *Matrix) checkBox(row, column, height, width int) error {
-	if column < 0 || width < 0 || column + width > m.Columns() || row < 0 || height < 0 || row + height > m.Rows() {
-		return fmt.Errorf("%s, column:%d, row:%d, width:%d, height:%d", m.StringShort(), column, row, width, height)
-	}
-	return nil
-}
-
-func (m *Matrix) checkRow(row int) error {
-	if row < 0 || row >= m.Rows() {
-		return fmt.Errorf("Attempted to access %s at row=%d", m.StringShort(), row)
-	}
-	return nil
-}
-
 // Returns a string representation using default formatting.
 func (m *Matrix) String() string {
 	return fmtr.MatrixToString(m)
-}
-
-// Returns a short string representation of the receiver's shape.
-func (m *Matrix) StringShort() string {
-	return fmtr.MatrixShape(m)
-}
-
-// Returns the number of cells which is Rows()*Columns().
-func (m *Matrix) Size() int {
-	return m.Rows()*m.Columns()
 }
 
 func (m *Matrix) Get(row int, column int) (float64, error) {
@@ -225,6 +185,184 @@ func (m *Matrix) Normalize() *Matrix {
 		m.AssignFunc(Multiply(sumScaleFactor))
 	}
 	return m
+}
+
+func (m *Matrix) ViewColumn(column int) (*Matrix, error) {
+	err := m.CheckColumn(column)
+	if err != nil {
+		return nil , err
+	}
+	viewSize := m.Rows()
+	viewZero := m.Index(0, column)
+	viewStride := m.RowStride()
+	return m.Like1D(viewSize, viewZero, viewStride)
+}
+
+func (m *Matrix) ViewColumnFlip() *Matrix {
+	v := m.View()
+	v.VColumnFlip()
+	return v
+}
+
+func (m *Matrix) ViewDice() *Matrix {
+	v := m.View()
+	v.VDice()
+	return v
+}
+
+func (m *Matrix) ViewPart(row, column, height, width int) (*Matrix, error) {
+	v := m.View()
+	err := v.VPart(row, column, height, width)
+	if err != nil {
+		return m, err
+	}
+	return v, nil
+}
+
+func (m *Matrix) ViewRow(row int) (*Vector, error) {
+	err := m.CheckRow(row)
+	if err != nil {
+		return nil, err
+	}
+	viewSize := m.Columns()
+	viewZero := m.Index(row, 0)
+	viewStride := m.ColumnStride()
+	r := m.Like1D(viewSize, viewZero, viewStride)
+	return r, nil
+}
+
+func (m *Matrix) ViewRowFlip() (*Matrix) {
+	v := m.View()
+	v.vRowFlip()
+	return v
+}
+
+func (m *Matrix) ViewSelectionProcedure(condition VectorProcedure) *Matrix {
+	matches := make([]int, 0)
+	for i := 0; i < m.Rows(); i++ {
+		if condition(m.ViewRow(i)) {
+			matches = append(matches, i)
+		}
+	}
+	return m.ViewSelection(matches, nil) // take all columns
+}
+
+func (m *Matrix) ViewSelection(rowIndexes, columnIndexes []int) (*Matrix, error) {
+	// check for "all"
+	if rowIndexes == nil {
+		rowIndexes = make([]int, m.Rows())
+		for i := 0; i < m.Rows(); i++ {
+			rowIndexes[i] = i
+		}
+	}
+	if columnIndexes == nil {
+		columnIndexes = make([]int, m.Columns())
+		for i := 0; i < m.Columns(); i++ {
+			columnIndexes[i] = i
+		}
+	}
+
+	err := m.CheckRowIndexes(rowIndexes)
+	if err != nil {
+		return nil, err
+	}
+	err = m.CheckColumnIndexes(columnIndexes)
+	if err != nil {
+		return nil, err
+	}
+	rowOffsets := make([]int, len(rowIndexes))
+	columnOffsets := make([]int, len(columnIndexes))
+	for i := 0; i < len(rowIndexes); i++ {
+		rowOffsets[i] = _rowOffset(_rowRank(rowIndexes[i]))
+	}
+	for i := 0; i < len(columnIndexes); i++ {
+		columnOffsets[i] = _columnOffset(_columnRank(columnIndexes[i]))
+	}
+	return m.ViewSelectionLike(rowOffsets, columnOffsets)
+}
+
+/*func (m *Matrix) ViewSorted(column int) *Matrix {
+	return mergeSort.sort(m, column)
+}*/
+
+func (m *Matrix) ViewStrides(rowStride, columnStride int) (*Matrix, error) {
+	v := m.View()
+	err := v.VStrides(rowStride, columnStride)
+	if err != nil {
+		return m, err
+	}
+	return v, nil
+}
+
+func (m *Matrix) ZMult(y, z *Vector) (*Vector, error) {
+	return m.ZMultConst(y, z, 1, 0, false)
+}
+
+func (m *Matrix) ZMultConst(y, z *Vector, alpha, beta float64, transposeA bool) (*Vector, error) {
+	if transposeA {
+		return m.ViewDice().ZMultConst(y, z, alpha, beta, false)
+	}
+	var zz *Vector
+	if z == nil {
+		zz = y.LikeVector(m.Rows())
+	} else {
+		zz = z
+	}
+	if m.Columns() != y.Size() || m.Rows() > zz.Size() {
+		return zz, fmt.Errorf("Incompatible args: %s, %s, %s", m.StringShort(), y.StringShort(), zz.StringShort())
+	}
+
+	for r := 0; r < m.Rows(); r++ {
+		s := 0.0
+		for c := 0; c < m.Columns(); c++ {
+			s += m.GetQuick(r, c) * y.GetQuick(c)
+		}
+		zz.SetQuick(r, alpha * s + beta * zz.getQuick(r))
+	}
+	return zz, nil
+}
+
+func (m *Matrix) ZMultMatrix(B, C *Matrix) (*Matrix, error) {
+	return m.ZMultMatrixConst(B, C, 1, 0, false, false)
+}
+
+func (m *Matrix) ZMultMatrixConst(B, C *Matrix, alpha, beta float64, transposeA, transposeB bool) (*Matrix, error) {
+	if transposeA {
+		return m.ViewDice().ZMultmatrixConst(B, C, alpha, beta, false, transposeB)
+	}
+	if transposeB {
+		return m.ZMultMatrixConst(B.ViewDice(), C, alpha, beta, transposeA, false)
+	}
+
+	m := m.Rows()
+	n := m.Columns()
+	p := B.Columns()
+	var CC *Matrix
+	if C == nil {
+		CC = m.Like(m, p)
+	} else {
+		CC = C
+	}
+	if B.Rows != n {
+		return CC, fmt.Errorf("Matrix2D inner dimensions must agree: %s, %s", m.StringShort(), B.StringShort())
+	}
+	if CC.Rows() != m || CC.Columns() != p {
+		return CC, fmt.Errorf("Incompatibe result matrix: %s, %s, %s", m.StringShort(), B.StringShort(), CC.toStringShort())
+	}
+	if m == CC || B == CC {
+		return CC, errors.New("Matrices must not be identical")
+	}
+
+	for a := 0; a < p; a++ {
+		for b := 0; b < m; b++ {
+			s := 0.0
+			for c := 0; c < n; c++ {
+				s += m.GetQuick(b, c) * B.GetQuick(c, a)
+			}
+			CC.SetQuick(b, a, alpha * s + beta * CC.GetQuick(b, a))
+		}
+	}
+	return CC, nil
 }
 
 func (m *Matrix) ZSum() float64 {
