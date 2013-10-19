@@ -1,11 +1,42 @@
 package tfloat64
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/rwl/goshawk/common"
+	"runtime"
+)
 
 func (m *Matrix) AssignFunc(f Float64Func) *Matrix {
-	for r := 0; r < m.Rows(); r++ {
-		for c := 0; c < m.Columns(); c++ {
-			m.SetQuick(r, c, f(m.GetQuick(r, c)))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && m.Rows()*m.Columns() > common.MatrixThreshold {
+		n = common.Min(n, m.Rows())
+		done := make(chan bool, n)
+		k := m.Rows() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = m.Rows()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for r := idx0; r < idx1; r++ {
+					for c := 0; c < m.Columns(); c++ {
+						m.SetQuick(r, c, f(m.GetQuick(r, c)))
+					}
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for r := 0; r < m.Rows(); r++ {
+			for c := 0; c < m.Columns(); c++ {
+				m.SetQuick(r, c, f(m.GetQuick(r, c)))
+			}
 		}
 	}
 	return m

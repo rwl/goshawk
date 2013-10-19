@@ -3,6 +3,8 @@ package tfloat64
 import (
 	"fmt"
 	"sort"
+	"github.com/rwl/goshawk/common"
+	"runtime"
 )
 
 var (
@@ -14,22 +16,9 @@ type Vector struct {
 	Vec
 }
 
-func (v *Vector) checkSize(other Vec) error {
-	if v.Size() != other.Size() {
-		return fmt.Errorf("Incompatible sizes: %s and %s",
-			fmtr.VectorShape(v), fmtr.VectorShape(other))
-	}
-	return nil
-}
-
 // Returns a string representation using default formatting.
 func (v *Vector) String() string {
 	return fmtr.VectorToString(v)
-}
-
-// Returns a short string representation of the receiver's shape.
-func (v *Vector) StringShort() string {
-	return fmtr.VectorShape(v)
 }
 
 // Returns the matrix cell value at coordinate "index".
@@ -77,10 +66,40 @@ func (v *Vector) ViewVector() *Vector {
 
 // Returns the number of cells having non-zero values; ignores tolerance.
 func (v *Vector) Cardinality() int {
-	cardinality := 0
-	for i := 0; i < v.Size(); i++ {
-		if v.GetQuick(i) != 0.0 {
-			cardinality += 1
+	var cardinality int
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan int, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				card := 0
+				for i := idx0; i < idx1; i++ {
+					if v.GetQuick(i) != 0.0 {
+						card += 1
+					}
+				}
+				c <- card
+			}()
+		}
+		cardinality = <-c
+		for j := 1; j < n; j++ {
+			cardinality += <-c
+		}
+	} else {
+		cardinality = 0
+		for i := 0; i < v.Size(); i++ {
+			if v.GetQuick(i) != 0.0 {
+				cardinality += 1
+			}
 		}
 	}
 	return cardinality
@@ -102,14 +121,53 @@ func (v *Vector) EqualsVector(other Vec) bool {
 
 // Return the maximum value of this matrix together with its location.
 func (v *Vector) MaxLocation() (float64, int) {
-	location := 0
-	maxValue := v.GetQuick(location)
-	var elem float64
-	for i := 1; i < v.Size(); i++ {
-		elem = v.GetQuick(i)
-		if maxValue < elem {
-			maxValue = elem
-			location = i
+	var location int
+	var maxValue float64
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan vectorElement, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				loc := idx0
+				max := v.GetQuick(loc)
+				for i := idx0 + 1; i < idx1; i++ {
+					elem := v.GetQuick(i)
+					if max < elem {
+						max = elem
+						loc = i
+					}
+				}
+				c <- vectorElement{max, loc}
+			}()
+		}
+		vl0 := <-c
+		maxValue = vl0.value
+		location = vl0.location
+		for j := 1; j < n; j++ {
+			vl := <-c
+			if maxValue < vl.value {
+				maxValue = vl.value
+				location = vl.location
+			}
+		}
+	} else {
+		location = 0
+		maxValue = v.GetQuick(location)
+		for i := 1; i < v.Size(); i++ {
+			elem := v.GetQuick(i)
+			if maxValue < elem {
+				maxValue = elem
+				location = i
+			}
 		}
 	}
 	return maxValue, location
@@ -117,14 +175,53 @@ func (v *Vector) MaxLocation() (float64, int) {
 
 // Return the minimum value of this matrix together with its location.
 func (v *Vector) MinLocation() (float64, int) {
-	location := 0
-	minValue := v.GetQuick(location)
-	var elem float64
-	for i := 1; i < v.Size(); i++ {
-		elem = v.GetQuick(i)
-		if minValue > elem {
-			minValue = elem
-			location = i
+	var location int
+	var minValue float64
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan vectorElement, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				loc := idx0
+				min := v.GetQuick(loc)
+				for i := idx0 + 1; i < idx1; i++ {
+					elem := v.GetQuick(i)
+					if min > elem {
+						min = elem
+						loc = i
+					}
+				}
+				c <- vectorElement{min, loc}
+			}()
+		}
+		vl0 := <-c
+		minValue = vl0.value
+		location = vl0.location
+		for j := 1; j < n; j++ {
+			vl := <-c
+			if minValue > vl.value {
+				minValue = vl.value
+				location = vl.location
+			}
+		}
+	} else {
+		location = 0
+		minValue = v.GetQuick(location)
+		for i := 1; i < v.Size(); i++ {
+			elem := v.GetQuick(i)
+			if minValue > elem {
+				minValue = elem
+				location = i
+			}
 		}
 	}
 	return minValue, location
@@ -344,10 +441,37 @@ func (v *Vector) Swap(other Vec) error {
 	if err != nil {
 		return err
 	}
-	for i := 0; i < v.Size(); i++ {
-		tmp := v.GetQuick(i)
-		v.SetQuick(i, other.GetQuick(i))
-		other.SetQuick(i, tmp)
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					tmp := v.GetQuick(i)
+					v.SetQuick(i, other.GetQuick(i))
+					other.SetQuick(i, tmp)
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			tmp := v.GetQuick(i)
+			v.SetQuick(i, other.GetQuick(i))
+			other.SetQuick(i, tmp)
+		}
 	}
 	return nil
 }
@@ -372,8 +496,33 @@ func (v *Vector) FillArray(values []float64) error {
 	if len(values) < v.Size() {
 		return fmt.Errorf("values too small")
 	}
-	for i := 0; i < v.Size(); i++ {
-		values[i] = v.GetQuick(i)
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					values[i] = v.GetQuick(i)
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			values[i] = v.GetQuick(i)
+		}
 	}
 	return nil
 }
@@ -402,11 +551,40 @@ func (v *Vector) ZDotProductRange(y Vec, from, length int) float64 {
 	}
 	length = tail - from
 
-	sum := 0.0
-	i := tail - 1
-	for k := 0; k < length; i-- {
-		sum += v.GetQuick(i)*y.GetQuick(i)
-		k++
+	var sum float64
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, length)
+		c := make(chan float64, n)
+		k := length / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = length
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				s := 0.0
+				for i := idx0; i < idx1; i++ {
+					idx := k + from
+					s += v.GetQuick(idx)*y.GetQuick(idx)
+				}
+				c <- s
+			}()
+		}
+		sum = <-c
+		for j := 1; j < n; j++ {
+			sum += <-c
+		}
+	} else {
+		sum = 0.0
+		i := tail - 1
+		for k := 0; k < length; i-- {
+			sum += v.GetQuick(i)*y.GetQuick(i)
+			k++
+		}
 	}
 	return sum
 }
@@ -459,4 +637,9 @@ func (v *Vector) ZSum() float64 {
 		return 0
 	}
 	return v.Aggregate(Plus, Identity)
+}
+
+type vectorElement struct {
+	value float64
+	location int
 }

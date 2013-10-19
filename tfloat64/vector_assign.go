@@ -2,20 +2,72 @@ package tfloat64
 
 import (
 	"fmt"
+	"github.com/rwl/goshawk/common"
+	"runtime"
 )
 
 // Assigns the result of a function to each cell; x[i] = f(x[i]).
 func (v *Vector) AssignFunc(f Float64Func) *Vector {
-	for i := 0; i < v.Size(); i++ {
-		v.SetQuick(i, f(v.GetQuick(i)))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					v.SetQuick(i, f(v.GetQuick(i)))
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			v.SetQuick(i, f(v.GetQuick(i)))
+		}
 	}
 	return v
 }
 
 // Sets all cells to the state specified by "value".
 func (v *Vector) Assign(value float64) *Vector {
-	for i := 0; i < v.Size(); i++ {
-		v.SetQuick(i, value)
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					v.SetQuick(i, value)
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			v.SetQuick(i, value)
+		}
 	}
 	return v
 }
@@ -30,8 +82,33 @@ func (v *Vector) AssignArray(values []float64) (*Vector, error) {
 		return v, fmt.Errorf("Must have same number of cells: length=%d size()=%d",
 			len(values), v.Size())
 	}
-	for i, val := range values {
-		v.SetQuick(i, val)
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					v.SetQuick(i, values[i])
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i, val := range values {
+			v.SetQuick(i, val)
+		}
 	}
 	return v, nil
 }
@@ -48,8 +125,33 @@ func (v *Vector) AssignVector(other Vec) (*Vector, error) {
 		//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
 		//			v.StringShort(), NewFormatter().VectorShape(other))
 	}
-	for i := 0; i < v.Size(); i++ {
-		v.SetQuick(i, other.GetQuick(i))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					v.SetQuick(i, other.GetQuick(i))
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			v.SetQuick(i, other.GetQuick(i))
+		}
 	}
 	return v, nil
 }
@@ -64,20 +166,72 @@ func (v *Vector) AssignVectorFunc(y Vec, f Float64Float64Func) (*Vector, error) 
 		//		return v, fmt.Errorf("Incompatible sizes: %s and %s",
 		//			v.StringShort(), NewFormatter().VectorShape(y))
 	}
-	// the general case x[i] = f(x[i],y[i])
-	for i := 0; i < v.Size(); i++ {
-		v.SetQuick(i, f(v.GetQuick(i), y.GetQuick(i)))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					v.SetQuick(i, f(v.GetQuick(i), y.GetQuick(i)))
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		// the general case x[i] = f(x[i],y[i])
+		for i := 0; i < v.Size(); i++ {
+			v.SetQuick(i, f(v.GetQuick(i), y.GetQuick(i)))
+		}
 	}
 	return v, nil
 }
 
 // Assigns the result of a function to all cells that satisfy a condition.
 func (v *Vector) AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Vector {
-	var elem float64
-	for i := 0; i < v.Size(); i++ {
-		elem = v.GetQuick(i)
-		if cond(elem) {
-			v.SetQuick(i, f(elem))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					elem := v.GetQuick(i)
+					if cond(elem) {
+						v.SetQuick(i, f(elem))
+					}
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			elem := v.GetQuick(i)
+			if cond(elem) {
+				v.SetQuick(i, f(elem))
+			}
 		}
 	}
 	return v
@@ -85,11 +239,38 @@ func (v *Vector) AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Vect
 
 // Assigns a value to all cells that satisfy a condition.
 func (v *Vector) AssignProcedure(cond Float64Procedure, value float64) *Vector {
-	var elem float64
-	for i := 0; i < v.Size(); i++ {
-		elem = v.GetQuick(i)
-		if cond(elem) {
-			v.SetQuick(i, value)
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		done := make(chan bool, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				for i := idx0; i < idx1; i++ {
+					elem := v.GetQuick(i)
+					if cond(elem) {
+						v.SetQuick(i, value)
+					}
+				}
+				done <- true
+			}()
+		}
+		for j := 0; j < n; j++ {
+			<-done
+		}
+	} else {
+		for i := 0; i < v.Size(); i++ {
+			elem := v.GetQuick(i)
+			if cond(elem) {
+				v.SetQuick(i, value)
+			}
 		}
 	}
 	return v

@@ -1,6 +1,10 @@
 package tfloat64
 
-import "math"
+import (
+	"math"
+	"github.com/rwl/goshawk/common"
+	"runtime"
+)
 
 // Applies a function to each cell and aggregates the results. Returns a
 // value v such that v==a(size()) where
@@ -19,8 +23,34 @@ func (v *Vector) Aggregate(aggr Float64Float64Func, f Float64Func) float64 {
 		return math.NaN()
 	}
 	a := f(v.GetQuick(0))
-	for i := 1; i < v.Size(); i++ {
-		a = aggr(a, f(v.GetQuick(i)))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan float64, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				var b float64
+				for i := idx0 + 1; i < idx1; i++ {
+					b = aggr(b, f(v.GetQuick(i)))
+				}
+				c <- b
+			}()
+		}
+		for j := 1; j < n; j++ {
+			a = aggr(a, <-c)
+		}
+	} else {
+		for i := 1; i < v.Size(); i++ {
+			a = aggr(a, f(v.GetQuick(i)))
+		}
 	}
 	return a
 }
@@ -33,10 +63,40 @@ func (v *Vector) AggregateIndexed(aggr Float64Float64Func, f Float64Func, indexL
 	}
 	size := len(indexList)
 	var elem float64
-	a := f(v.GetQuick(indexList[0]))
-	for i := 1; i < size; i++ {
-		elem = v.GetQuick(indexList[i])
-		a = aggr(a, f(elem))
+	var a float64
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan float64, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				var b float64 = f(v.GetQuick(indexList[idx0]))
+				var elem float64
+				for i := idx0 + 1; i < idx1; i++ {
+					elem = v.GetQuick(indexList[i])
+					b = aggr(b, f(elem))
+				}
+				c <- b
+			}()
+		}
+		a = <-c
+		for j := 1; j < n; j++ {
+			a = aggr(a, <-c)
+		}
+	} else {
+		a = f(v.GetQuick(indexList[0]))
+		for i := 1; i < size; i++ {
+			elem = v.GetQuick(indexList[i])
+			a = aggr(a, f(elem))
+		}
 	}
 	return a
 }
@@ -68,8 +128,34 @@ func (v *Vector) AggregateVector(other Vec, aggr, f Float64Float64Func) (float64
 		return math.NaN(), nil
 	}
 	a := f(v.GetQuick(0), other.GetQuick(0))
-	for i := 1; i < v.Size(); i++ {
-		a = aggr(a, f(v.GetQuick(i), other.GetQuick(i)))
+	n := runtime.GOMAXPROCS(-1)
+	if n > 1 && v.Size() > common.VectorThreshold {
+		n = common.Min(n, v.Size())
+		c := make(chan float64, n)
+		k := v.Size() / n
+		var idx0, idx1 int
+		for j := 0; j < n; j++ {
+			idx0 = j * k
+			if j == n - 1 {
+				idx1 = v.Size()
+			} else {
+				idx1 = idx0 + k
+			}
+			go func() {
+				b := f(v.GetQuick(idx0), other.GetQuick(idx0))
+				for i := idx0 + 1; i < idx1; i++ {
+					a = aggr(a, f(v.GetQuick(i), other.GetQuick(i)))
+				}
+				c <- b
+			}()
+		}
+		for j := 1; j < n; j++ {
+			a = aggr(a, <-c)
+		}
+	} else {
+		for i := 1; i < v.Size(); i++ {
+			a = aggr(a, f(v.GetQuick(i), other.GetQuick(i)))
+		}
 	}
 	return a, nil
 }
