@@ -2,45 +2,15 @@ package tfloat64
 
 import (
 	"testing"
-	"math/rand"
 	"math"
 	"github.com/rwl/goshawk/common"
 )
 
-const (
-	test_size = 2*17*5
-	tol       = 1e-10
-)
-
-func makeDenseVector() (*Vector) {
-	A := NewVector(test_size)
-	for i := 0; i < test_size; i++ {
-		A.SetQuick(i, rand.Float64())
-	}
-	return A
-}
-
-func makeSparseVector() (*Vector) {
-	A := NewSparseVector(test_size)
-	for i := 0; i < test_size; i++ {
-		A.SetQuick(i, rand.Float64())
-	}
-	return A
-}
+const tol = 1e-10
 
 type cardinalityVector interface {
-Vec
+	Vec
 	Cardinality() int
-}
-
-func TestDenseCardinality(t *testing.T) {
-	A := makeDenseVector()
-	testCardinality(t, A)
-}
-
-func TestSparseCardinality(t *testing.T) {
-	A := makeSparseVector()
-	testCardinality(t, A)
 }
 
 func testCardinality(t *testing.T, A cardinalityVector) {
@@ -55,16 +25,6 @@ type equalsVector interface {
 	Equals(float64) bool
 }
 
-func TestDenseEquals(t *testing.T) {
-	A := makeDenseVector()
-	testEquals(t, A)
-}
-
-func TestSparseEquals(t *testing.T) {
-	A := makeSparseVector()
-	testEquals(t, A)
-}
-
 func testEquals(t *testing.T, A equalsVector) {
 	value := 1.0
 	A.Assign(value)
@@ -77,20 +37,8 @@ func testEquals(t *testing.T, A equalsVector) {
 }
 
 type equalsVectorVector interface {
-Vec
+	Vec
 	EqualsVector(Vec) bool
-}
-
-func TestDenseEqualsVector(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testEqualsVector(t, A, B)
-}
-
-func TestSparseEqualsVector(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testEqualsVector(t, A, B)
 }
 
 func testEqualsVector(t *testing.T, A, B equalsVectorVector) {
@@ -103,19 +51,9 @@ func testEqualsVector(t *testing.T, A, B equalsVectorVector) {
 }
 
 type maxLocationVector interface {
-Vec
+	Vec
 	Assign(float64) *Vector
 	MaxLocation() (float64, int)
-}
-
-func TestDenseMaxLocation(t *testing.T) {
-	A := makeDenseVector()
-	testMaxLocation(t, A)
-}
-
-func TestSparseMaxLocation(t *testing.T) {
-	A := makeSparseVector()
-	testMaxLocation(t, A)
 }
 
 func testMaxLocation(t *testing.T, A maxLocationVector) {
@@ -133,19 +71,9 @@ func testMaxLocation(t *testing.T, A maxLocationVector) {
 }
 
 type minLocationVector interface {
-Vec
+	Vec
 	Assign(float64) *Vector
 	MinLocation() (float64, int)
-}
-
-func TestDenseMinLocation(t *testing.T) {
-	A := makeDenseVector()
-	testMinLocation(t, A)
-}
-
-func TestSparseMinLocation(t *testing.T) {
-	A := makeSparseVector()
-	testMinLocation(t, A)
 }
 
 func testMinLocation(t *testing.T, A minLocationVector) {
@@ -163,19 +91,9 @@ func testMinLocation(t *testing.T, A minLocationVector) {
 }
 
 type negativeValuesVector interface {
-Vec
+	Vec
 	Assign(float64) *Vector
 	NegativeValues(*[]int, *[]float64)
-}
-
-func TestDenseNegativeValues(t *testing.T) {
-	A := makeDenseVector()
-	testGetNegativeValues(t, A)
-}
-
-func TestSparseNegativeValues(t *testing.T) {
-	A := makeSparseVector()
-	testGetNegativeValues(t, A)
 }
 
 func testGetNegativeValues(t *testing.T, A negativeValuesVector) {
@@ -211,16 +129,6 @@ Vec
 	NonZeros(*[]int, *[]float64)
 }
 
-func TestDenseNonZeros(t *testing.T) {
-	A := makeDenseVector()
-	testNonZeros(t, A)
-}
-
-func TestSparseNonZeros(t *testing.T) {
-	A := makeSparseVector()
-	testNonZeros(t, A)
-}
-
 func testNonZeros(t *testing.T, A nonZerosVector) {
 	A.Assign(0)
 	A.SetQuick(A.Size()/3, 0.7)
@@ -249,19 +157,9 @@ func testNonZeros(t *testing.T, A nonZerosVector) {
 }
 
 type positiveValuesVector interface {
-Vec
+	Vec
 	Assign(float64) *Vector
 	PositiveValues(*[]int, *[]float64)
-}
-
-func TestDensePositiveValues(t *testing.T) {
-	A := makeDenseVector()
-	testPositiveValues(t, A)
-}
-
-func TestSparsePositiveValues(t *testing.T) {
-	A := makeSparseVector()
-	testPositiveValues(t, A)
 }
 
 func testPositiveValues(t *testing.T, A positiveValuesVector) {
@@ -292,18 +190,8 @@ func testPositiveValues(t *testing.T, A positiveValuesVector) {
 }
 
 type toArrayVector interface {
-Vec
+	Vec
 	ToArray() []float64
-}
-
-func TestDenseToArray(t *testing.T) {
-	A := makeDenseVector()
-	testToArray(t, A)
-}
-
-func TestSparseToArray(t *testing.T) {
-	A := makeSparseVector()
-	testToArray(t, A)
 }
 
 func testToArray(t *testing.T, A toArrayVector) {
@@ -321,18 +209,8 @@ func testToArray(t *testing.T, A toArrayVector) {
 }
 
 type fillArrayVector interface {
-Vec
+	Vec
 	FillArray([]float64) error
-}
-
-func TestDenseFillArray(t *testing.T) {
-	A := makeDenseVector()
-	testFillArray(t, A)
-}
-
-func TestSparseFillArray(t *testing.T) {
-	A := makeSparseVector()
-	testFillArray(t, A)
 }
 
 func testFillArray(t *testing.T, A fillArrayVector) {
@@ -351,17 +229,7 @@ func testFillArray(t *testing.T, A fillArrayVector) {
 }
 
 type reshapeMatrixVector interface {
-Vec
-}
-
-func TestDenseReshapeMatrix(t *testing.T) {
-	A := makeDenseVector()
-	testReshapeMatrix(t, A)
-}
-
-func TestSparseReshapeMatrix(t *testing.T) {
-	A := makeSparseVector()
-	testReshapeMatrix(t, A)
+	Vec
 }
 
 func testReshapeMatrix(t *testing.T, A reshapeMatrixVector) {
@@ -384,17 +252,7 @@ func testReshapeMatrix(t *testing.T, A reshapeMatrixVector) {
 }
 
 type reshapeCubeVector interface {
-Vec
-}
-
-func TestDenseReshapeCube(t *testing.T) {
-	A := makeDenseVector()
-	testReshapeCube(t, A)
-}
-
-func TestSparseReshapeCube(t *testing.T) {
-	A := makeSparseVector()
-	testReshapeCube(t, A)
+	Vec
 }
 
 func testReshapeCube(t *testing.T, A reshapeCubeVector) {
@@ -420,21 +278,9 @@ func testReshapeCube(t *testing.T, A reshapeCubeVector) {
 }
 
 type swapVector interface {
-Vec
+	Vec
 	Swap(Vec) error
 	Copy() *Vector
-}
-
-func TestDenseSwap(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testSwap(t, A, B)
-}
-
-func TestSparseSwap(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testSwap(t, A, B)
 }
 
 func testSwap(t *testing.T, A, B swapVector) {
@@ -457,20 +303,8 @@ func testSwap(t *testing.T, A, B swapVector) {
 }
 
 type dotProductVector interface {
-Vec
+	Vec
 	ZDotProduct(Vec) float64
-}
-
-func TestDenseZDotProduct(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testZDotProduct(t, A, B)
-}
-
-func TestSparseZDotProduct(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testZDotProduct(t, A, B)
 }
 
 func testZDotProduct(t *testing.T, A, B dotProductVector) {
@@ -485,20 +319,8 @@ func testZDotProduct(t *testing.T, A, B dotProductVector) {
 }
 
 type dotProductRangeVector interface {
-Vec
+	Vec
 	ZDotProductRange(Vec, int, int) float64
-}
-
-func TestDenseZDotProductRange(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testZDotProductRange(t, A, B)
-}
-
-func TestSparseZDotProductRange(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testZDotProductRange(t, A, B)
 }
 
 func testZDotProductRange(t *testing.T, A, B dotProductRangeVector) {
@@ -513,21 +335,9 @@ func testZDotProductRange(t *testing.T, A, B dotProductRangeVector) {
 }
 
 type dotProductSelectionVector interface {
-Vec
+	Vec
 	ZDotProductSelection(Vec, int, int, []int) float64
 	NonZeros(*[]int, *[]float64)
-}
-
-func TestDenseZDotProductSelection(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testZDotProductSelection(t, A, B)
-}
-
-func TestSparseZDotProductSelection(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testZDotProductSelection(t, A, B)
 }
 
 func testZDotProductSelection(t *testing.T, A, B dotProductSelectionVector) {
@@ -544,18 +354,8 @@ func testZDotProductSelection(t *testing.T, A, B dotProductSelectionVector) {
 }
 
 type sumVector interface {
-Vec
+	Vec
 	ZSum() float64
-}
-
-func TestDenseZSum(t *testing.T) {
-	A := makeDenseVector()
-	testZSum(t, A)
-}
-
-func TestSparseZSum(t *testing.T) {
-	A := makeSparseVector()
-	testZSum(t, A)
 }
 
 func testZSum(t *testing.T, A sumVector) {

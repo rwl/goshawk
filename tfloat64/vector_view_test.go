@@ -6,18 +6,8 @@ import (
 )
 
 type viewFlipVector interface {
-Vec
+	Vec
 	ViewFlip() *Vector
-}
-
-func TestDenseViewFlip(t *testing.T) {
-	A := makeDenseVector()
-	testViewFlip(t, A)
-}
-
-func TestSparseViewFlip(t *testing.T) {
-	A := makeSparseVector()
-	testViewFlip(t, A)
 }
 
 func testViewFlip(t *testing.T, A viewFlipVector) {
@@ -35,18 +25,8 @@ func testViewFlip(t *testing.T, A viewFlipVector) {
 }
 
 type viewPartVector interface {
-Vec
+	Vec
 	ViewPart(int, int) *Vector
-}
-
-func TestDenseViewPart(t *testing.T) {
-	A := makeDenseVector()
-	testViewPart(t, A)
-}
-
-func TestSparseViewPart(t *testing.T) {
-	A := makeSparseVector()
-	testViewPart(t, A)
 }
 
 func testViewPart(t *testing.T, A viewPartVector) {
@@ -61,18 +41,8 @@ func testViewPart(t *testing.T, A viewPartVector) {
 }
 
 type viewProcedureVector interface {
-Vec
+	Vec
 	ViewProcedure(Float64Procedure) *Vector
-}
-
-func TestDenseViewProcedure(t *testing.T) {
-	A := makeDenseVector()
-	testViewProcedure(t, A)
-}
-
-func TestSparseViewProcedure(t *testing.T) {
-	A := makeSparseVector()
-	testViewProcedure(t, A)
 }
 
 func testViewProcedure(t *testing.T, A viewProcedureVector) {
@@ -88,18 +58,8 @@ func testViewProcedure(t *testing.T, A viewProcedureVector) {
 }
 
 type viewVector interface {
-Vec
+	Vec
 	View([]int) (*Vector, error)
-}
-
-func TestDenseView(t *testing.T) {
-	A := makeDenseVector()
-	testView(t, A)
-}
-
-func TestSparseView(t *testing.T) {
-	A := makeSparseVector()
-	testView(t, A)
 }
 
 func testView(t *testing.T, A viewVector) {
@@ -119,16 +79,6 @@ func testView(t *testing.T, A viewVector) {
 	ViewSorted() *Vector
 }
 
-func TestDenseViewSorted(t *testing.T) {
-	A := makeDenseVector()
-	testViewSorted(t, A)
-}
-
-func TestSparseViewSorted(t *testing.T) {
-	A := makeSparseVector()
-	testViewSorted(t, A)
-}
-
 func testViewSorted(t *testing.T, A viewSortedVector) {
 	b := A.ViewSorted()
 	for i := 0; i < A.Size() - 1; i++ {
@@ -139,18 +89,8 @@ func testViewSorted(t *testing.T, A viewSortedVector) {
 }*/
 
 type viewStridesVector interface {
-Vec
+	Vec
 	ViewStrides(int) *Vector
-}
-
-func TestDenseViewStrides(t *testing.T) {
-	A := makeDenseVector()
-	testViewStrides(t, A)
-}
-
-func TestSparseViewStrides(t *testing.T) {
-	A := makeSparseVector()
-	testViewStrides(t, A)
 }
 
 func testViewStrides(t *testing.T, A viewStridesVector) {

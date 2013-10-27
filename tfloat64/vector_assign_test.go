@@ -7,18 +7,8 @@ import (
 )
 
 type assignVector interface {
-Vec
+	Vec
 	Assign(float64) *Vector
-}
-
-func TestDenseAssign(t *testing.T) {
-	A := makeDenseVector()
-	testAssign(t, A)
-}
-
-func TestSparseAssign(t *testing.T) {
-	A := makeSparseVector()
-	testAssign(t, A)
 }
 
 func testAssign(t *testing.T, A assignVector) {
@@ -33,18 +23,8 @@ func testAssign(t *testing.T, A assignVector) {
 }
 
 type assignArrayVector interface {
-Vec
+	Vec
 	AssignArray([]float64) (*Vector, error)
-}
-
-func TestDenseAssignArray(t *testing.T) {
-	A := makeDenseVector()
-	testAssignArray(t, A)
-}
-
-func TestSparseAssignArray(t *testing.T) {
-	A := makeSparseVector()
-	testAssignArray(t, A)
 }
 
 func testAssignArray(t *testing.T, A assignArrayVector) {
@@ -62,19 +42,9 @@ func testAssignArray(t *testing.T, A assignArrayVector) {
 }
 
 type assignFuncVector interface {
-Vec
+	Vec
 	AssignFunc(Float64Func) *Vector
 	Copy() *Vector
-}
-
-func TestDenseAssignFunc(t *testing.T) {
-	A := makeDenseVector()
-	testAssignFunc(t, A)
-}
-
-func TestSparseAssignFunc(t *testing.T) {
-	A := makeSparseVector()
-	testAssignFunc(t, A)
 }
 
 func testAssignFunc(t *testing.T, A assignFuncVector) {
@@ -90,20 +60,8 @@ func testAssignFunc(t *testing.T, A assignFuncVector) {
 }
 
 type assignVectorVector interface {
-Vec
+	Vec
 	AssignVector(Vec) (*Vector, error)
-}
-
-func TestDenseAssignVector(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testAssignVector(t, A, B)
-}
-
-func TestSparseAssignVector(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testAssignVector(t, A, B)
 }
 
 func testAssignVector(t *testing.T, A assignVectorVector, B Vec) {
@@ -121,21 +79,9 @@ func testAssignVector(t *testing.T, A assignVectorVector, B Vec) {
 }
 
 type assignVectorFuncVector interface {
-Vec
+	Vec
 	AssignVectorFunc(Vec, Float64Float64Func) (*Vector, error)
 	Copy() *Vector
-}
-
-func TestDenseAssignVectorFunc(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testAssignVectorFunc(t, A, B)
-}
-
-func TestSparseAssignVectorFunc(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testAssignVectorFunc(t, A, B)
 }
 
 func testAssignVectorFunc(t *testing.T, A assignVectorFuncVector, B *Vector) {
@@ -154,16 +100,6 @@ type assignProcedureVector interface {
 Vec
 	AssignProcedure(Float64Procedure, float64) *Vector
 	Copy() *Vector
-}
-
-func TestDenseAssignProcedure(t *testing.T) {
-	A := makeDenseVector()
-	testAssignProcedure(t, A)
-}
-
-func TestSparseAssignProcedure(t *testing.T) {
-	A := makeSparseVector()
-	testAssignProcedure(t, A)
 }
 
 func testAssignProcedure(t *testing.T, A assignProcedureVector) {
@@ -192,19 +128,9 @@ func testAssignProcedure(t *testing.T, A assignProcedureVector) {
 }
 
 type assignProcedureFuncVector interface {
-Vec
+	Vec
 	AssignProcedureFunc(Float64Procedure, Float64Func) *Vector
 	Copy() *Vector
-}
-
-func TestDenseAssignProcedureFunc(t *testing.T) {
-	A := makeDenseVector()
-	testAssignProcedureFunc(t, A)
-}
-
-func TestSparseAssignProcedureFunc(t *testing.T) {
-	A := makeSparseVector()
-	testAssignProcedureFunc(t, A)
 }
 
 func testAssignProcedureFunc(t *testing.T, A assignProcedureFuncVector) {

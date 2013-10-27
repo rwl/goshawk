@@ -11,16 +11,6 @@ type assignMatrix interface {
 	Assign(value float64) *Matrix
 }
 
-func TestDenseMatrixAssign(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAssign(t, A)
-}
-
-func TestSparseMatrixAssign(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAssign(t, A)
-}
-
 func testMatrixAssign(t *testing.T, A assignMatrix) {
 	value := rand.Float64()
 	A.Assign(value)
@@ -37,16 +27,6 @@ func testMatrixAssign(t *testing.T, A assignMatrix) {
 type assignArrayMatrix interface {
 	Mat
 	AssignArray(values [][]float64) (*Matrix, error)
-}
-
-func TestDenseMatrixAssignArray(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAssignArray(t, A)
-}
-
-func TestSparseMatrixAssignArray(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAssignArray(t, A)
 }
 
 func testMatrixAssignArray(t *testing.T, A assignArrayMatrix) {
@@ -76,16 +56,6 @@ type assignFuncMatrix interface {
 	Copy() *Matrix
 }
 
-func TestDenseMatrixAssignFunc(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAssignFunc(t, A)
-}
-
-func TestSparseMatrixAssignFunc(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAssignFunc(t, A)
-}
-
 func testMatrixAssignFunc(t *testing.T, A assignFuncMatrix) {
 	Acopy := A.Copy()
 	A.AssignFunc(math.Acos)
@@ -102,18 +72,6 @@ func testMatrixAssignFunc(t *testing.T, A assignFuncMatrix) {
 type assignMatrixMatrix interface {
 	Mat
 	AssignMatrix(other Mat) (*Matrix, error)
-}
-
-func TestDenseMatrixAssignMatrix(t *testing.T) {
-	A := makeDenseMatrix()
-	B := makeDenseMatrix()
-	testMatrixAssignMatrix(t, A, B)
-}
-
-func TestSparseMatrixAssignMatrix(t *testing.T) {
-	A := makeSparseMatrix()
-	B := makeSparseMatrix()
-	testMatrixAssignMatrix(t, A, B)
 }
 
 func testMatrixAssignMatrix(t *testing.T, A, B assignMatrixMatrix) {
@@ -135,18 +93,6 @@ type assignMatrixFuncMatrix interface {
 	Copy() *Matrix
 }
 
-func TestDenseMatrixAssignMatrixFunc(t *testing.T) {
-	A := makeDenseMatrix()
-	B := makeDenseMatrix()
-	testMatrixAssignMatrixFunc(t, A, B)
-}
-
-func TestSparseMatrixAssignMatrixFunc(t *testing.T) {
-	A := makeSparseMatrix()
-	B := makeSparseMatrix()
-	testMatrixAssignMatrixFunc(t, A, B)
-}
-
 func testMatrixAssignMatrixFunc(t *testing.T, A, B assignMatrixFuncMatrix) {
 	Acopy := A.Copy()
 	A.AssignMatrixFunc(B, Plus)
@@ -165,18 +111,6 @@ type assignMatrixFuncSelection interface {
 	Mat
 	AssignMatrixFuncSelection(y Mat, f Float64Float64Func, rowList, columnList []int) (*Matrix, error)
 	Copy() *Matrix
-}
-
-func TestDenseMatrixAssignMatrixFuncSelection(t *testing.T) {
-	A := makeDenseMatrix()
-	B := makeDenseMatrix()
-	testMatrixAssignMatrixFuncSelection(t, A, B)
-}
-
-func TestSparseMatrixAssignMatrixFuncSelection(t *testing.T) {
-	A := makeSparseMatrix()
-	B := makeSparseMatrix()
-	testMatrixAssignMatrixFuncSelection(t, A, B)
 }
 
 func testMatrixAssignMatrixFuncSelection(t *testing.T, A, B assignMatrixFuncSelection) {
@@ -205,16 +139,6 @@ type assignProcedureMatrix interface {
 	Mat
 	AssignProcedure(cond Float64Procedure, value float64) *Matrix
 	Copy() *Matrix
-}
-
-func TestDenseMatrixAssignProcedure(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAssignProcedure(t, A)
-}
-
-func TestSparseMatrixAssignProcedure(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAssignProcedure(t, A)
 }
 
 func testMatrixAssignProcedure(t *testing.T, A assignProcedureMatrix) {
@@ -247,16 +171,6 @@ type assignProcedureFuncMatrix interface {
 	Mat
 	AssignProcedureFunc(cond Float64Procedure, f Float64Func) *Matrix
 	Copy() *Matrix
-}
-
-func TestDenseMatrixAssignProcedureFunc(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAssignProcedureFunc(t, A)
-}
-
-func TestSparseMatrixAssignProcedureFunc(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAssignProcedureFunc(t, A)
 }
 
 func testMatrixAssignProcedureFunc(t *testing.T, A assignProcedureFuncMatrix) {

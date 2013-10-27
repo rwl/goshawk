@@ -10,16 +10,6 @@ type aggregateMatrix interface {
 	Aggregate(aggr Float64Float64Func, f Float64Func) float64
 }
 
-func TestDenseMatrixAggregate(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAggregate(t, A)
-}
-
-func TestSparseMatrixAggregate(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAggregate(t, A)
-}
-
 func testMatrixAggregate(t *testing.T, A aggregateMatrix) {
 	expected := 0.0
 	for r := 0; r < A.Rows(); r++ {
@@ -37,16 +27,6 @@ func testMatrixAggregate(t *testing.T, A aggregateMatrix) {
 type aggregateProcedureMatrix interface {
 	Mat
 	AggregateProcedure(aggr Float64Float64Func, f Float64Func, cond Float64Procedure) float64
-}
-
-func TestDenseMatrixAggregateProcedure(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAggregateProcedure(t, A)
-}
-
-func TestSparseMatrixAggregateProcedure(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAggregateProcedure(t, A)
 }
 
 func testMatrixAggregateProcedure(t *testing.T, A aggregateProcedureMatrix) {
@@ -78,16 +58,6 @@ type aggregateProcedureSelectionMatrix interface {
 	AggregateProcedureSelection(aggr Float64Float64Func, f Float64Func, rowList, columnList []int) float64
 }
 
-func TestDenseMatrixAggregateProcedureSelection(t *testing.T) {
-	A := makeDenseMatrix()
-	testMatrixAggregateProcedureSelection(t, A)
-}
-
-func TestSparseMatrixAggregateProcedureSelection(t *testing.T) {
-	A := makeSparseMatrix()
-	testMatrixAggregateProcedureSelection(t, A)
-}
-
 func testMatrixAggregateProcedureSelection(t *testing.T, A aggregateProcedureSelectionMatrix) {
 	var rowList []int
 	var columnList []int
@@ -113,18 +83,6 @@ func testMatrixAggregateProcedureSelection(t *testing.T, A aggregateProcedureSel
 type aggregateMatrixMatrix interface {
 	Mat
 	AggregateMatrix(other Mat, aggr Float64Float64Func, f Float64Float64Func) (float64, error)
-}
-
-func TestDenseMatrixAggregateMatrix(t *testing.T) {
-	A := makeDenseMatrix()
-	B := makeDenseMatrix()
-	testMatrixAggregateMatrix(t, A, B)
-}
-
-func TestSparseMatrixAggregateMatrix(t *testing.T) {
-	A := makeSparseMatrix()
-	B := makeSparseMatrix()
-	testMatrixAggregateMatrix(t, A, B)
 }
 
 func testMatrixAggregateMatrix(t *testing.T, A, B aggregateMatrixMatrix) {

@@ -6,18 +6,8 @@ import (
 )
 
 type aggregateVector interface {
-Vec
+	Vec
 	Aggregate(Float64Float64Func, Float64Func) float64
-}
-
-func TestDenseAggregate(t *testing.T) {
-	A := makeDenseVector()
-	testAggregate(t, A)
-}
-
-func TestSparseAggregate(t *testing.T) {
-	A := makeSparseVector()
-	testAggregate(t, A)
 }
 
 func testAggregate(t *testing.T, A aggregateVector) {
@@ -34,18 +24,8 @@ func testAggregate(t *testing.T, A aggregateVector) {
 }
 
 type aggregateIndexedVector interface {
-Vec
+	Vec
 	AggregateIndexed(Float64Float64Func, Float64Func, []int) float64
-}
-
-func TestDenseAggregateIndexed(t *testing.T) {
-	A := makeDenseVector()
-	testAggregateIndexed(t, A)
-}
-
-func TestSparseAggregateIndexed(t *testing.T) {
-	A := makeSparseVector()
-	testAggregateIndexed(t, A)
 }
 
 func testAggregateIndexed(t *testing.T, A aggregateIndexedVector) {
@@ -65,20 +45,8 @@ func testAggregateIndexed(t *testing.T, A aggregateIndexedVector) {
 }
 
 type aggregatorVectorVector interface {
-Vec
+	Vec
 	AggregateVector(Vec, Float64Float64Func, Float64Float64Func) (float64, error)
-}
-
-func TestDenseAggregateVector(t *testing.T) {
-	A := makeDenseVector()
-	B := makeDenseVector()
-	testAggregateVector(t, A, B)
-}
-
-func TestSparseAggregateVector(t *testing.T) {
-	A := makeSparseVector()
-	B := makeSparseVector()
-	testAggregateVector(t, A, B)
 }
 
 func testAggregateVector(t *testing.T, A aggregatorVectorVector, B Vec) {
